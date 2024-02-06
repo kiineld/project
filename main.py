@@ -53,14 +53,14 @@ class RegistrationScreen(Screen):
             cursor.execute(check_query)
             rows = cursor.fetchall()
             for row in rows:
-                if username == row['name'] or password == row['password'] or email == row['mail']:
+                if username == row['name'] or password == row['password'] or email == row['email']:
                     print("user in database")
                     in_data_base = True
                     break
 
         with connection.cursor() as cursor:
             if not in_data_base:
-                insert_query = f"INSERT INTO users (name, password, mail) VALUES ('{username}','{password}','{email}')"
+                insert_query = f"INSERT INTO users (name, password, email) VALUES ('{username}','{password}','{email}')"
                 cursor.execute(insert_query)
             connection.commit()
 
@@ -219,9 +219,9 @@ class RegistrationApp(MDApp):
         section_selection = ScreenSelection(name="section_selection")
         screen_manager.add_widget(section_selection)
 
-        self.fps_monitor_start()
         return screen_manager
 
 
 if __name__ == '__main__':
     RegistrationApp().run()
+    

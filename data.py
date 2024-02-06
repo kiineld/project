@@ -1,7 +1,7 @@
 import pymysql.cursors
 
 connection = pymysql.connect(
-    host='localhost',
+    host='26.234.187.103',
     port=3306,
     user="root",
     password="online123",
