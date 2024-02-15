@@ -1,0 +1,57 @@
+<ScreenSelection>:
+    Label:
+        text: "Выберете раздел"
+        color: 0, 0, 0
+        font_size: 60
+        size_hint: 1, 0.4
+        pos_hint: {"center_x": 0.5, "center_y": 0.92}
+
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint: 0.8, 0.8
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        spacing: 115
+
+        RoundedButton:
+            text: "Механика"
+            font_size: 20
+            size_hint: 0.3, 0.9
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            on_press: app.root.current = "mechanics"
+
+        RoundedButton:
+            text: "Электричество"
+            font_size: 20
+            size_hint: 0.3, 0.9
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            on_press: app.root.current = "electricity"
+
+        RoundedButton:
+            text: "Оптика"
+            font_size: 20
+            size_hint: 0.3, 0.9
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            on_press: app.root.current = "optics"
+
+<MechanicsScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        Label:
+            text: "Выберете комплект"
+            color: 0, 0, 0
+            font_size: 20
+
+<ElectricityScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        Label:
+            color: 0, 0, 0
+            font_size: 20
+
+<OpticsScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        Label:
+            text: "Выберете комплект"
+            color: 0, 0, 0
+            font_size: 20

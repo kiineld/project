@@ -1,5 +1,5 @@
-from config import host, port, user, passkey, database
 import pymysql.cursors
+from config import host, port, user, passkey, database
 
 connection = pymysql.connect(
     host=host,

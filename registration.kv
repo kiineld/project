@@ -10,129 +10,6 @@
             radius: [32]
 
 
-<LoginScreen>:
-    BoxLayout:
-        size_hint: 1, 1
-        pos_hint: {"center_x": 0.5, "center_y": 0.5}
-        orientation: "vertical"
-        canvas:
-            Color:
-                rgba: 1, 1, 1, 1
-            Rectangle:
-                size: self.size
-                pos: self.pos
-
-
-    BoxLayout:
-        color: 0, 1, 0, 1
-        size_hint: 0.25, 0.5
-        pos_hint: {"center_x": 0.5, "center_y": 0.5}
-        orientation: "vertical"
-        size: root.width, root.height
-        padding: 10
-        spacing: 10
-        canvas:
-            Color:
-                rgb: 0, 0, 0
-            BoxShadow:
-                pos: self.pos
-                size: self.size
-                offset: 0, -15
-                blur_radius: 50
-                spread_radius: -30, -30
-                border_radius: 40, 40, 40, 40
-            Color:
-                rgb: 1, 1, 1
-            RoundedRectangle:
-                size: self.size
-                pos: self.pos
-                radius: [40]
-
-
-        Label:
-            text: "[b]С возвращением![/b]"
-            bold: True
-            markup: True
-            color: 0, 0, 0
-            font_size: 50
-            size_hint: 0.5, 0.5
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-        TextInput:
-            hint_text: "Введите имя пользователя"
-            helper_text: "Имя должно содержать два слова"
-            helper_text_mode: "persistent"
-            id: username_input
-            font_size: 32
-            multiline: False
-            size_hint: 0.7, 0.2
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-
-            cursor_width: "2sp"
-            background_color: 1, 1, 1, 0
-            foreground_color: rgba(0, 0, 59, 255)
-            cursor_color: rgba(0, 0, 59, 255)
-
-            canvas.before:
-                Line:
-                    width: 2
-                    points: (self.x, self.y + self.height / 3, self.x + self.width, self.y + self.height / 3)
-
-        TextInput:
-            id: password_input
-            hint_text: "Введите пароль"
-            helper_text: "Пароль должен состоять минимум из 6-ти символов"
-            helper_text_mode: "persistent"
-            font_size: 32
-            password: True
-            multiline: False
-            size_hint: 0.7, 0.2
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-
-            cursor_width: "2sp"
-            background_color: 1, 1, 1, 0
-            foreground_color: rgba(0, 0, 59, 255)
-            cursor_color: rgba(0, 0, 59, 255)
-
-            canvas.before:
-                Line:
-                    width: 2
-                    points: (self.x, self.y + self.height / 3, self.x + self.width, self.y + self.height / 3)
-
-        RoundedButton:
-            text: "Войти в аккаунт"
-            font_size: 30
-            size_hint: 0.7, 0.21
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            on_press: root.do_login(self)
-
-        Button:
-            text: "Нет аккаунта? Создать"
-            color: 168/255, 228/255, 160/255, 1
-            background_color: (1,0,1,0)
-            background_normal: ''
-            font_size: 30
-            size_hint: 0.7, 0.21
-            border_radius: 32
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            canvas.before:
-                Color:
-                    rgba: 168/255, 228/255, 160/255, 1
-                Line:
-                    rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
-                    width: 2
-            on_press: app.root.current = "registration"
-
-        Button:
-            background_color: (1,0,1,0)
-            background_normal: ''
-            text: "Войти как гость"
-            font_size: 25
-            color: rgba(68, 78, 132, 255)
-            size_hint: 0.5, 0.2
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            on_press: app.root.current = "section_selection"
-
-
 <RegistrationScreen>:
     BoxLayout:
         size_hint: 1, 1
@@ -178,6 +55,7 @@
             font_size: 50
             size_hint: 0.5, 0.5
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
         TextInput:
             hint_text: "Введите почту"
             helper_text_mode: "persistent"
@@ -186,6 +64,17 @@
             multiline: False
             size_hint: 0.7, 0.2
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+            cursor_width: "2sp"
+            background_color: 1, 1, 1, 0
+            foreground_color: rgba(0, 0, 59, 255)
+            cursor_color: rgba(0, 0, 59, 255)
+
+            canvas.before:
+                Line:
+                    width: 2
+                    points: (self.x, self.y + self.height / 3, self.x + self.width, self.y + self.height / 3)
+
         TextInput:
             hint_text: "Введите имя пользователя"
             helper_text: "Имя должно содержать два слова"
@@ -195,6 +84,17 @@
             multiline: False
             size_hint: 0.7, 0.2
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+            cursor_width: "2sp"
+            background_color: 1, 1, 1, 0
+            foreground_color: rgba(0, 0, 59, 255)
+            cursor_color: rgba(0, 0, 59, 255)
+
+            canvas.before:
+                Line:
+                    width: 2
+                    points: (self.x, self.y + self.height / 3, self.x + self.width, self.y + self.height / 3)
+
         TextInput:
             id: password_input
             hint_text: "Введите пароль"
@@ -205,71 +105,37 @@
             multiline: False
             size_hint: 0.7, 0.2
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+            cursor_width: "2sp"
+            background_color: 1, 1, 1, 0
+            foreground_color: rgba(0, 0, 59, 255)
+            cursor_color: rgba(0, 0, 59, 255)
+
+            canvas.before:
+                Line:
+                    width: 2
+                    points: (self.x, self.y + self.height / 3, self.x + self.width, self.y + self.height / 3)
+
         RoundedButton:
             text: "Зарегистрироваться"
             font_size: 30
             size_hint: 0.7, 0.21
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
             on_press: root.do_registration(self)
-        MDTextButton:
+
+        Button:
             text: "Есть аккаунт? Войти"
+            color: 168/255, 228/255, 160/255, 1
+            background_color: (1,0,1,0)
+            background_normal: ''
             font_size: 30
-            size_hint: 0.5, 0.2
-            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            size_hint: 0.7, 0.21
+            border_radius: 32
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            canvas.before:
+                Color:
+                    rgba: 168/255, 228/255, 160/255, 1
+                Line:
+                    rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+                    width: 2
             on_press: app.root.current = "login"
-
-
-
-<ScreenSelection>:
-    Label:
-        text: "Выберете раздел"
-        color: 0, 0, 0
-        font_size: 20
-        size_hint: 1, 0.3
-        pos_hint: {"center_x": 0.5, "center_y": 0.9}
-    BoxLayout:
-        orientation: "horizontal"
-        size_hint: 0.8, 0.8
-        pos_hint: {"center_x": 0.5, "center_y": 0.5}
-        spacing: 115
-        RoundedButton:
-            text: "Механика"
-            font_size: 20
-            size_hint: 0.3, 0.9
-            pos_hint: {"center_x": 0.5, "center_y": 0.5}
-            on_press: app.root.current = "mechanics"
-        RoundedButton:
-            text: "Электричество"
-            font_size: 20
-            size_hint: 0.3, 0.9
-            pos_hint: {"center_x": 0.5, "center_y": 0.5}
-            on_press: app.root.current = "electricity"
-        RoundedButton:
-            text: "Оптика"
-            font_size: 20
-            size_hint: 0.3, 0.9
-            pos_hint: {"center_x": 0.5, "center_y": 0.5}
-            on_press: app.root.current = "optics"
-
-<MechanicsScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        Label:
-            text: "Выберете комплект"
-            color: 0, 0, 0
-            font_size: 20
-
-<ElectricityScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        Label:
-            color: 0, 0, 0
-            font_size: 20
-
-<OpticsScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        Label:
-            text: "Выберете комплект"
-            color: 0, 0, 0
-            font_size: 20

@@ -8,10 +8,14 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Color, Line
 from kivy.uix.widget import Widget
 from kivy.uix.image import Image
-
+from kivy.lang import Builder
 from config import host, port, user, passkey, database
 import re
 import pymysql.cursors
+
+Builder.load_file('registration.kv')
+Builder.load_file('login.kv')
+Builder.load_file('selection.kv')
 
 connection = pymysql.connect(
     host=host,
@@ -48,7 +52,7 @@ class RegistrationScreen(Screen):
 
         print(f"Зарегистрирован {username} с паролем: {password} и почтой: {email}")
 
-        with (connection.cursor() as cursor):
+        with connection.cursor() as cursor:
             check_query = """SELECT * FROM users"""
             cursor.execute(check_query)
             rows = cursor.fetchall()
@@ -197,7 +201,7 @@ class OpticsScreen(Screen):
     pass
 
 
-class RegistrationApp(MDApp):
+class PhysicsApp(MDApp):
     def build(self):
         screen_manager = ScreenManager()
 
@@ -223,5 +227,5 @@ class RegistrationApp(MDApp):
 
 
 if __name__ == '__main__':
-    RegistrationApp().run()
+    PhysicsApp().run()
     
