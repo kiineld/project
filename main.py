@@ -63,7 +63,7 @@ class LoginScreen(Screen):
         username = self.ids.username_input.text
         password = self.ids.password_input.text
         with (connection.cursor() as cursor):
-            check_query = """SELECT * FROM users"""
+            check_query = """SELECT * FROM user_data"""
             cursor.execute(check_query)
             rows = cursor.fetchall()
             for row in rows:
