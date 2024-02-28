@@ -1,4 +1,4 @@
-host = "109.252.173.44"
+host = "localhost"
 port = 3306
 user = "root"
 passkey = "online123"
