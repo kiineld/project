@@ -1,6 +1,6 @@
-host = "sql11.freesqldatabase.com"
+host = "localhost"
 port = 3306
-user = "sql11682492"
-passkey = "75NnwLKsLA"
-database = "sql11682492"
+user = "root"
+passkey = "online123"
+database = "user_data"
 

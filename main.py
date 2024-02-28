@@ -159,7 +159,7 @@ class PaintElectricity(MDApp):
         icons_box = BoxLayout(orientation='horizontal', size_hint=(1, 0.1))
         for i in range(4):
             icon = DraggableElement(source=f'icon{i}.png')
-            icons_box.add_widget(icon)
+            icons_box.add_widget(icon) 
         root.add_widget(icons_box)
         return root
 
