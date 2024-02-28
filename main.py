@@ -32,21 +32,6 @@ class RegistrationScreen(Screen):
         password = self.ids.password_input.text
         email = self.ids.email_input.text
 
-        # if len(username.split()) != 2:
-        #     print("Имя пользователя должно состоять из 2-ух слов: фамилии и имени")
-        #     return
-        # if not username.split()[0].isalpha() or not username.split()[1].isalpha():
-        #     print("Имя пользователя не может включать символы помимо букв")
-        #     return
-
-        # if len(password) < 6:
-        #     print("Пароль должен содержать не менее 6 символов")
-        #     return
-
-        # if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-        #     print("Неправильный формат адреса электронной почты")
-        #     return
-
         print(f"Зарегистрирован {username} с паролем: {password} и почтой: {email}")
 
         with connection.cursor() as cursor:
@@ -171,6 +156,21 @@ class MechanicsScreen(Screen):
 class ElectricityScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        
+        self.orientation = "vertical"
+        self.canvas.before.add(Color(0.9, 0.9, 0.9, 1)) #цвет фона
+        self.canvas.before.add(Line(width=1.5))
+
+        cell_size = 50 #размер ячейки сетки
+        win_width, win_height = Window.size
+
+        for i in range(int(win_width/cell_size)+1): #вертикальные линии
+            x = i * cell_size
+            self.canvas.before.add(Line(points=[x, 0, x, win_height], width=1))
+        for i in range(int(win_height / cell_size)+1): #горизонтальные линии
+            y = i * cell_size
+            self.canvas.before.add(Line(points=[0, y, win_width, y], width=1))
+        
         self.icons = []
 
         resistor = DraggableElement(source='C:\\Users\\Саша\\Downloads\\resistor.png')
