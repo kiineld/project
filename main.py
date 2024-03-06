@@ -5,6 +5,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.graphics import Color, Line
 from kivy.uix.widget import Widget
 from kivy.uix.image import Image
+from kivy.utils import get_color_from_hex, get_hex_from_color
 from kivy.lang import Builder
 from config import host, port, user, passkey, database
 import re
@@ -31,6 +32,21 @@ class RegistrationScreen(Screen):
         username = self.ids.username_input.text
         password = self.ids.password_input.text
         email = self.ids.email_input.text
+
+        if len(username.split()) != 2:
+            print("Имя пользователя должно состоять из 2-ух слов: фамилии и имени")
+            return
+        if not username.split()[0].isalpha() or not username.split()[1].isalpha():
+            print("Имя пользователя не может включать символы помимо букв")
+            return
+
+        if len(password) < 6:
+            print("Пароль должен содержать не менее 6 символов")
+            return
+
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            print("Неправильный формат адреса электронной почты")
+            return
 
         print(f"Зарегистрирован {username} с паролем: {password} и почтой: {email}")
 
@@ -63,7 +79,7 @@ class LoginScreen(Screen):
         username = self.ids.username_input.text
         password = self.ids.password_input.text
         with (connection.cursor() as cursor):
-            check_query = """SELECT * FROM users"""
+            check_query = """SELECT * FROM user_data"""
             cursor.execute(check_query)
             rows = cursor.fetchall()
             for row in rows:
@@ -109,17 +125,28 @@ class PaintWidget(Widget):
 
 
 class DraggableElement(Image):
+    initial_position = None  # начальная позиция первого элемента
+    dragged_elements = []  # cписок для хранения уже перетащенных элементов
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.size_hint = (None, None)
-        self.size = (50, 50)  #размер элемента
-        self.dragging = False  #флаг перетаскивания элемента
-        self.touch_offset = None  #смещение при перетаскивании
+        self.size = (50, 50)  # размер элемента
+        self.dragging = False  # флаг перетаскивания элемента
+        self.touch_offset = None  # смещение при перетаскивании
+
+    def create_duplicate(self):
+        duplicate = DraggableElement(source=self.source)
+        duplicate.size = self.size
+        duplicate.pos = self.initial_position
+        return duplicate
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             self.dragging = True
             self.touch_offset = (self.pos[0] - touch.pos[0], self.pos[1] - touch.pos[1])
+            if not self.initial_position:
+                self.initial_position = tuple(self.pos)
             return True
         return super().on_touch_down(touch)
 
@@ -130,8 +157,25 @@ class DraggableElement(Image):
         return super().on_touch_move(touch)
 
     def on_touch_up(self, touch):
-        if hasattr(self, 'dragging') and self.dragging:
+        if self.collide_point(*touch.pos):
             self.dragging = False
+            self.dragged_elements.append(self)
+            # Округление координат к ближайшим точкам сетки
+            cell_size = 50
+            if self.pos[0] % cell_size >= cell_size / 2:
+                new_x = (int(self.pos[0] / cell_size) + 1) * cell_size
+            else:
+                new_x = int(self.pos[0] / cell_size) * cell_size
+
+            if self.pos[1] % cell_size >= cell_size / 2:
+                new_y = (int(self.pos[1] / cell_size) + 1) * cell_size
+            else:
+                new_y = int(self.pos[1] / cell_size) * cell_size
+            # Перемещение элемента в ближайшую точку сетки
+            self.pos = (new_x, new_y)
+            # Создание дубликата элемента на первоначальном месте
+            duplicate_element = self.create_duplicate()
+            self.parent.add_widget(duplicate_element)
             return True
         return super().on_touch_up(touch)
 
@@ -156,39 +200,44 @@ class MechanicsScreen(Screen):
 class ElectricityScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
+
         self.orientation = "vertical"
-        self.canvas.before.add(Color(0.9, 0.9, 0.9, 1)) #цвет фона
+        self.canvas.before.add(Color(0.9, 0.9, 0.9, 1))  # цвет фона
         self.canvas.before.add(Line(width=1.5))
 
-        cell_size = 50 #размер ячейки сетки
+        cell_size = 50  # размер ячейки сетки
         win_width, win_height = Window.size
 
-        for i in range(int(win_width/cell_size)+1): #вертикальные линии
+        for i in range(int(win_width / cell_size) + 1):  # вертикальные линии
             x = i * cell_size
             self.canvas.before.add(Line(points=[x, 0, x, win_height], width=1))
-        for i in range(int(win_height / cell_size)+1): #горизонтальные линии
+        for i in range(int(win_height / cell_size) + 1):  # горизонтальные линии
             y = i * cell_size
             self.canvas.before.add(Line(points=[0, y, win_width, y], width=1))
-        
+
         self.icons = []
 
-        resistor = DraggableElement(source='C:\\Users\\Саша\\Downloads\\resistor.png')
+        wire = DraggableElement(source="images/wire.png")
+        wire.pos = (250, 10)
+        self.add_widget(wire)
+        self.icons.append(wire)
+
+        resistor = DraggableElement(source="images/resistor.png")
         resistor.pos = (10, 10)
         self.add_widget(resistor)
         self.icons.append(resistor)
 
-        voltmeter = DraggableElement(source='C:\\Users\\Саша\\Downloads\\voltmeter.png')
+        voltmeter = DraggableElement(source="images/voltmeter.png")
         voltmeter.pos = (70, 10)
         self.add_widget(voltmeter)
         self.icons.append(voltmeter)
 
-        ammeter = DraggableElement(source='C:\\Users\\Саша\\Downloads\\ammeter.png')
+        ammeter = DraggableElement(source="images/ammeter.png")
         ammeter.pos = (130, 10)
         self.add_widget(ammeter)
         self.icons.append(ammeter)
 
-        source = DraggableElement(source='C:\\Users\\Саша\\Downloads\\source.png')
+        source = DraggableElement(source="images/source.png")
         source.pos = (190, 10)
         self.add_widget(source)
         self.icons.append(source)
@@ -225,4 +274,3 @@ class PhysicsApp(MDApp):
 
 if __name__ == '__main__':
     PhysicsApp().run()
-    
