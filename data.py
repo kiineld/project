@@ -1,12 +1,11 @@
 import pymysql.cursors
-from config import host, port, user, passkey, database
 
 connection = pymysql.connect(
-    host=host,
-    port=port,
-    user=user,
-    password=passkey,
-    database=database,
+    host='localhost',
+    port=3306,
+    user="root",
+    password="online123",
+    database="user_data",
     cursorclass=pymysql.cursors.DictCursor
 )
 
