@@ -13,7 +13,12 @@ Builder.load_file('registration.kv')
 Builder.load_file('login.kv')
 Builder.load_file('selection.kv')
 Builder.load_file('mainField.kv')
-Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+Builder.load_file('set_selection_electricity.kv')
+Builder.load_file('set_selection_mechanics.kv')
+Builder.load_file('set_selection_optics.kv')
+Config.set('input', 'mouse', 'mouse, multitouch_on_demand')
+
+title = None
 
 connection = pymysql.connect(
     host=host,
@@ -23,7 +28,8 @@ connection = pymysql.connect(
     database=database,
     cursorclass=pymysql.cursors.DictCursor
 )
-Window.maximize()
+
+#Window.maximize()
 
 
 class RegistrationScreen(Screen):
@@ -100,17 +106,7 @@ class LoginScreen(Screen):
 
 
 class ScreenSelection(Screen):
-    def open_section1(self):
-        self.manager.current = "mechanics"
-        print("Open section: Mechanics")
-
-    def open_section2(self):
-        self.manager.current = "electricity"
-        print("Open section: Electricity")
-
-    def open_section3(self):
-        self.manager.current = "optics"
-        print("Open section: Optics")
+    pass
 
 
 class DraggableElement(Image):
@@ -181,8 +177,10 @@ class MechanicsScreen(Screen):
 
 class ElectricityScreen(Screen):
     def __init__(self, **kwargs):
+        global title
         super().__init__(**kwargs)
         self.orientation = "vertical"
+        self.title = self.ids.top_bar.title
         self.canvas.before.add(Color(0.9, 0.9, 0.9, 1))
         self.canvas.before.add(Line(width=1.5))
 
@@ -232,13 +230,41 @@ class ElectricityScreen(Screen):
         print("logout")
         app = MDApp.get_running_app()
         app.root.transition.direction = "right"
-        app.root.current = "section_selection"
+        app.root.current = "set_selection_electricity"
 
     def open_account(self):
         print("account")
 
+    # def change(self):
+    #     print("CHANGED")
+    #     global title
+    #     self.title = title
+    #     print(f"title - {title}/{self.title}")
+    #     return str(self.title)
+
 
 class OpticsScreen(Screen):
+    pass
+
+
+class SetScreenElectricity(Screen):
+    # def __init__(self, **kwargs):
+    #     super().__init__(**kwargs)
+    #     self.set_number = None
+    #
+    # def change_title(self, number):
+    #     global title
+    #     self.set_number = number
+    #     title = self.set_number
+    #     print(title)
+    pass
+
+
+class SetScreenMechanics(Screen):
+    pass
+
+
+class SetScreenOptics(Screen):
     pass
 
 
@@ -263,6 +289,15 @@ class PhysicsApp(MDApp):
 
         section_selection = ScreenSelection(name="section_selection")
         screen_manager.add_widget(section_selection)
+
+        set_selection_electricity = SetScreenElectricity(name="set_selection_electricity")
+        screen_manager.add_widget(set_selection_electricity)
+
+        set_selection_mechanics = SetScreenMechanics(name="set_selection_mechanics")
+        screen_manager.add_widget(set_selection_mechanics)
+
+        set_selection_optics = SetScreenOptics(name="set_selection_optics")
+        screen_manager.add_widget(set_selection_optics)
 
         return screen_manager
 

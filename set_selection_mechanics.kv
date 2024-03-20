@@ -1,11 +1,4 @@
-<ScreenSelection>:
-    Label:
-        text: "Выберете раздел"
-        color: 0, 0, 0
-        font_size: 60
-        size_hint: 1, 0.4
-        pos_hint: {"center_x": 0.5, "center_y": 0.92}
-
+<SetScreenMechanics>:
     BoxLayout:
         orientation: "horizontal"
         size_hint: 0.8, 0.8
@@ -18,9 +11,8 @@
             size_hint: 0.3, 0.9
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
             on_press:
-                app.root.current = "set_selection_mechanics"
+                app.root.current = "mechanics"
                 app.root.transition.direction = "left"
-
 
         RoundedButton:
             text: "Электричество"
@@ -28,7 +20,7 @@
             size_hint: 0.3, 0.9
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
             on_press:
-                app.root.current = "set_selection_electricity"
+                app.root.current = "electricity"
                 app.root.transition.direction = "left"
 
         RoundedButton:
@@ -37,28 +29,5 @@
             size_hint: 0.3, 0.9
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
             on_press:
-                app.root.current = "set_selection_optics"
+                app.root.current = "optics"
                 app.root.transition.direction = "left"
-
-<MechanicsScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        Label:
-            text: "Выберете комплект"
-            color: 0, 0, 0
-            font_size: 20
-
-<ElectricityScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        Label:
-            color: 0, 0, 0
-            font_size: 20
-
-<OpticsScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        Label:
-            text: "Выберете комплект"
-            color: 0, 0, 0
-            font_size: 20
