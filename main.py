@@ -29,7 +29,7 @@ connection = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor
 )
 
-#Window.maximize()
+Window.maximize()
 
 
 class RegistrationScreen(Screen):
@@ -235,12 +235,8 @@ class ElectricityScreen(Screen):
     def open_account(self):
         print("account")
 
-    # def change(self):
-    #     print("CHANGED")
-    #     global title
-    #     self.title = title
-    #     print(f"title - {title}/{self.title}")
-    #     return str(self.title)
+    def change(self, number):
+        self.ids.top_bar.title = str(number)
 
 
 class OpticsScreen(Screen):
@@ -248,16 +244,8 @@ class OpticsScreen(Screen):
 
 
 class SetScreenElectricity(Screen):
-    # def __init__(self, **kwargs):
-    #     super().__init__(**kwargs)
-    #     self.set_number = None
-    #
-    # def change_title(self, number):
-    #     global title
-    #     self.set_number = number
-    #     title = self.set_number
-    #     print(title)
-    pass
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
 
 class SetScreenMechanics(Screen):

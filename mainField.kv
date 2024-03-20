@@ -1,10 +1,78 @@
+<DrawerClickableItem@MDNavigationDrawerItem>
+    focus_color: "#e7e4c0"
+    text_color: "#4a4939"
+    icon_color: "#4a4939"
+    ripple_color: "#c5bdd2"
+    selected_color: "#0c6c4d"
+
+
+<DrawerLabelItem@MDNavigationDrawerItem>
+    text_color: "#4a4939"
+    icon_color: "#4a4939"
+    focus_behavior: False
+    selected_color: "#4a4939"
+    _no_ripple_effect: True
+
+
 <ElectricityScreen>:
-    BoxLayout:
-        MDTopAppBar:
-            id: top_bar
-            title: "Электричество"
-            pos_hint: {"center_x": 0.5, "center_y": 0.97}
-            left_action_items: [["arrow-left-bold-circle-outline", lambda x: root.go_back()]]
-            right_action_items: [["account", lambda x: root.open_account()]]
-            elevation: 1
-            md_bg_color: 168/255, 228/255, 160/255, 1
+    MDScreen:
+        MDNavigationLayout:
+            MDScreenManager:
+                MDScreen:
+                    MDTopAppBar:
+                        id: top_bar
+                        title: "Электричество"
+                        orientation: "vertical"
+                        pos_hint: {"center_x": 0.5, "center_y": 0.97}
+                        left_action_items: [["arrow-left-bold-circle-outline", lambda x: root.go_back()]]
+                        right_action_items: [["account", lambda x: root.open_account()], ["menu", lambda x: root.ids.nav_drawer.set_state("toggle")]]
+                        elevation: 1
+                        md_bg_color: 168/255, 228/255, 160/255, 1
+#                    MDRaisedButton:
+#                        text: "Open Drawer"
+#                        pos_hint: {"center_x": .5, "center_y": .5}
+#                        on_release: nav_drawer.set_state("toggle")
+
+            MDNavigationDrawer:
+                id: nav_drawer
+                radius: (dp(16), 0, 0, dp(16))
+                anchor: "right"
+                MDNavigationDrawerMenu:
+                    MDNavigationDrawerHeader:
+                        title: "Элементы комплекта"
+                        title_color: "#4a4939"
+                        text: "Выберите элемент комплекта"
+                        spacing: "4dp"
+                        padding: "12dp", 0, 0, "56dp"
+
+#                    MDNavigationDrawerLabel:
+#                        text: "Mail"
+
+                    DrawerClickableItem:
+                        icon: "images/horizontal_wire.png"
+                        text: "Провод"
+                    DrawerClickableItem:
+                        icon: "images/ammeter.png"
+                        text: "Амперметр"
+                    DrawerClickableItem:
+                        icon: "images/resistor.png"
+                        text: "Резистор"
+                    DrawerClickableItem:
+                        icon: "images/source.png"
+                        text: "Источник питания"
+                    DrawerClickableItem:
+                        icon: "images/voltmeter.png"
+                        text: "Вольтметр"
+
+#                    MDNavigationDrawerDivider:
+
+#                    MDNavigationDrawerLabel:
+#                        text: "Label"
+#
+#                    DrawerLabelItem:
+#                        icon: "information-outline"
+#                        text: "Label"
+#
+#                    DrawerLabelItem:
+#                        icon: "information-outline"
+#                        text: "Label"
