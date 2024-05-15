@@ -32,6 +32,12 @@
 #                        text: "Open Drawer"
 #                        pos_hint: {"center_x": .5, "center_y": .5}
 #                        on_release: nav_drawer.set_state("toggle")
+                    RoundedButton:
+                        text: "Проверить"
+                        font_size: 20
+                        size_hint: 0.05, 0.05
+                        pos_hint: {"center_x": 0.5, "center_y": 0.04}
+                        on_press: root.check_scheme()
 
             MDNavigationDrawer:
                 id: nav_drawer

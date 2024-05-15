@@ -2,9 +2,11 @@ from kivy.animation import Animation
 from kivy.core.window import Window
 from kivy.graphics import Color, Line
 from kivy.properties import NumericProperty
+from kivy.uix.popup import Popup
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.image import Image
+from kivy.uix.label import Label
 from kivy.lang import Builder
 from config import host, port, user, passkey, database
 from kivy.config import Config
@@ -33,6 +35,7 @@ connection = pymysql.connect(
 )
 
 Window.maximize()
+icons = []
 
 
 class RegistrationScreen(Screen):
@@ -113,6 +116,7 @@ class ScreenSelection(Screen):
 
 
 class DraggableElement(Image):
+    global icons
     initial_position = None  # начальная позиция первого элемента
     dragged_elements = []  # cписок для хранения уже перетащенных элементов
     angle = NumericProperty(0)
@@ -143,6 +147,7 @@ class DraggableElement(Image):
                 # print("KRASNYA POINT")
                 self.dragging = False
                 self.parent.remove_widget(self)
+                icons.remove(self)
 
             else:
                 self.dragging = True
@@ -159,6 +164,9 @@ class DraggableElement(Image):
         # обработка перемещения
         if self.dragging and touch.button == "left":
             # print("MOVING")
+            for icon in icons:
+                print(icon.pos, end=' ')
+            print()
             self.pos = (touch.pos[0] + self.touch_offset[0], touch.pos[1] + self.touch_offset[1])
 
     def on_touch_up(self, touch):
@@ -187,6 +195,8 @@ class MechanicsScreen(Screen):
 
 
 class ElectricityScreen(Screen):
+    global icons
+
     def __init__(self, **kwargs):
         global title
         super().__init__(**kwargs)
@@ -204,8 +214,6 @@ class ElectricityScreen(Screen):
         for i in range(int(win_height / cell_size) + 1):  # горизонтальные линии
             y = i * cell_size
             self.canvas.before.add(Line(points=[0, y, win_width, y], width=1))
-
-        self.icons = []
 
         # horizontal_wire = DraggableElement(source="images/horizontal_wire.png")
         # horizontal_wire.pos = (250, 10)
@@ -249,15 +257,24 @@ class ElectricityScreen(Screen):
     def change(self, number):
         self.ids.top_bar.title = str(number)
 
+    def check_scheme(self):
+        popup = Popup(title='Ошибка', content=Label(text='Неправильная схема!'), size_hint=(None, None), size=(200, 100))
+        popup.overlay_color = Color(1, 1, 1, 0).rgba
+        popup.separator_color = Color(168/255, 228/255, 160/255, 1).rgba
+        popup.open()
+
     def make_element(self, element_path):
         element = DraggableElement(source=element_path)
         window_handle = win32gui.FindWindow(None, "Physics")
         window_rect = win32gui.GetWindowRect(window_handle)
         width = window_rect[2] - window_rect[0]
         height = window_rect[3] - window_rect[1]
-        element.pos = (width / 2, height / 2)
+        element.pos = [width / 2, height / 2]
         self.add_widget(element)
-        self.icons.append(element)
+        for icon in icons:
+            if element.pos == icon.pos:
+                element.pos = [icon.pos[0], icon.pos[1] + 50]
+        icons.append(element)
 
 
 class OpticsScreen(Screen):
