@@ -35,6 +35,7 @@
 
             MDNavigationDrawer:
                 id: nav_drawer
+                type: "standard"
                 radius: (dp(16), 0, 0, dp(16))
                 anchor: "right"
                 MDNavigationDrawerMenu:
@@ -44,6 +45,8 @@
                         text: "Выберите элемент комплекта"
                         spacing: "4dp"
                         padding: "12dp", 0, 0, "56dp"
+                        Image:
+                            source: "C:\\Users\\kiineld\\Downloads\\photo_2024-03-16_02-14-00.jpg"
 
 #                    MDNavigationDrawerLabel:
 #                        text: "Mail"
@@ -51,18 +54,31 @@
                     DrawerClickableItem:
                         icon: "images/horizontal_wire.png"
                         text: "Провод"
+                        on_press: root.make_element("images/horizontal_wire.png")
+                    MDNavigationDrawerDivider:
+
                     DrawerClickableItem:
                         icon: "images/ammeter.png"
                         text: "Амперметр"
+                        on_press: root.make_element("images/ammeter.png")
+                    MDNavigationDrawerDivider:
+
                     DrawerClickableItem:
                         icon: "images/resistor.png"
                         text: "Резистор"
+                        on_press: root.make_element("images/resistor.png")
+                    MDNavigationDrawerDivider:
+
                     DrawerClickableItem:
                         icon: "images/source.png"
                         text: "Источник питания"
+                        on_press: root.make_element("images/source.png")
+                    MDNavigationDrawerDivider:
+
                     DrawerClickableItem:
                         icon: "images/voltmeter.png"
                         text: "Вольтметр"
+                        on_press: root.make_element("images/voltmeter.png")
 
 #                    MDNavigationDrawerDivider:
 

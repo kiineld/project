@@ -1,5 +1,7 @@
+from kivy.animation import Animation
 from kivy.core.window import Window
 from kivy.graphics import Color, Line
+from kivy.properties import NumericProperty
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.image import Image
@@ -8,6 +10,7 @@ from config import host, port, user, passkey, database
 from kivy.config import Config
 import re
 import pymysql.cursors
+import win32gui
 
 Builder.load_file('registration.kv')
 Builder.load_file('login.kv')
@@ -112,6 +115,7 @@ class ScreenSelection(Screen):
 class DraggableElement(Image):
     initial_position = None  # начальная позиция первого элемента
     dragged_elements = []  # cписок для хранения уже перетащенных элементов
+    angle = NumericProperty(0)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -120,25 +124,32 @@ class DraggableElement(Image):
         self.dragging = False  # флаг перетаскивания
         self.touch_offset = None  # смещение при перетаскивании
 
-    def create_duplicate(self):
-        # создание дупликата
-        duplicate = DraggableElement(source=self.source)
-        duplicate.size = self.size
-        duplicate.pos = self.initial_position
-        return duplicate
+    # def create_duplicate(self):
+    #     # создание дупликата
+    #     duplicate = DraggableElement(source=self.source)
+    #     duplicate.size = self.size
+    #     duplicate.pos = self.initial_position
+    #     return duplicate
 
     def on_touch_down(self, touch):
         # обработка клика на элемент
         if self.collide_point(*touch.pos):
+            if touch.is_double_tap:
+                self.dragging = False
+                self.angle += 90
+                self.angle = (self.angle % 360)
+
             if touch.button == 'right':
                 # print("KRASNYA POINT")
                 self.dragging = False
                 self.parent.remove_widget(self)
+
             else:
                 self.dragging = True
                 self.touch_offset = (self.pos[0] - touch.pos[0], self.pos[1] - touch.pos[1])
                 if not self.initial_position:
                     self.initial_position = tuple(self.pos)
+
         else:
             if touch.button == 'right':
                 # print("KRASNYA POINT")
@@ -147,7 +158,7 @@ class DraggableElement(Image):
     def on_touch_move(self, touch):
         # обработка перемещения
         if self.dragging and touch.button == "left":
-            print("MOVING")
+            # print("MOVING")
             self.pos = (touch.pos[0] + self.touch_offset[0], touch.pos[1] + self.touch_offset[1])
 
     def on_touch_up(self, touch):
@@ -167,8 +178,8 @@ class DraggableElement(Image):
                 new_y = int(self.pos[1] / cell_size) * cell_size
             self.pos = (new_x, new_y) # перемещение элемента в ближайшую точку сетки
             # создание дубликата элемента на первоначальном месте
-            duplicate_element = self.create_duplicate()
-            self.parent.add_widget(duplicate_element)
+            # duplicate_element = self.create_duplicate()
+            # self.parent.add_widget(duplicate_element)
 
 
 class MechanicsScreen(Screen):
@@ -196,35 +207,35 @@ class ElectricityScreen(Screen):
 
         self.icons = []
 
-        horizontal_wire = DraggableElement(source="images/horizontal_wire.png")
-        horizontal_wire.pos = (250, 10)
-        self.add_widget(horizontal_wire)
-        self.icons.append(horizontal_wire)
-
-        vertical_wire = DraggableElement(source="images/vertical_wire.png")
-        vertical_wire.pos = (310, 10)
-        self.add_widget(vertical_wire)
-        self.icons.append(vertical_wire)
-
-        resistor = DraggableElement(source="images/resistor.png")
-        resistor.pos = (10, 10)
-        self.add_widget(resistor)
-        self.icons.append(resistor)
-
-        voltmeter = DraggableElement(source="images/voltmeter.png")
-        voltmeter.pos = (70, 10)
-        self.add_widget(voltmeter)
-        self.icons.append(voltmeter)
-
-        ammeter = DraggableElement(source="images/ammeter.png")
-        ammeter.pos = (130, 10)
-        self.add_widget(ammeter)
-        self.icons.append(ammeter)
-
-        source = DraggableElement(source="images/source.png")
-        source.pos = (190, 10)
-        self.add_widget(source)
-        self.icons.append(source)
+        # horizontal_wire = DraggableElement(source="images/horizontal_wire.png")
+        # horizontal_wire.pos = (250, 10)
+        # self.add_widget(horizontal_wire)
+        # self.icons.append(horizontal_wire)
+        #
+        # vertical_wire = DraggableElement(source="images/vertical_wire.png")
+        # vertical_wire.pos = (310, 10)
+        # self.add_widget(vertical_wire)
+        # self.icons.append(vertical_wire)
+        #
+        # resistor = DraggableElement(source="images/resistor.png")
+        # resistor.pos = (10, 10)
+        # self.add_widget(resistor)
+        # self.icons.append(resistor)
+        #
+        # voltmeter = DraggableElement(source="images/voltmeter.png")
+        # voltmeter.pos = (70, 10)
+        # self.add_widget(voltmeter)
+        # self.icons.append(voltmeter)
+        #
+        # ammeter = DraggableElement(source="images/ammeter.png")
+        # ammeter.pos = (130, 10)
+        # self.add_widget(ammeter)
+        # self.icons.append(ammeter)
+        #
+        # source = DraggableElement(source="images/source.png")
+        # source.pos = (190, 10)
+        # self.add_widget(source)
+        # self.icons.append(source)
 
     def go_back(self):
         print("logout")
@@ -237,6 +248,16 @@ class ElectricityScreen(Screen):
 
     def change(self, number):
         self.ids.top_bar.title = str(number)
+
+    def make_element(self, element_path):
+        element = DraggableElement(source=element_path)
+        window_handle = win32gui.FindWindow(None, "Physics")
+        window_rect = win32gui.GetWindowRect(window_handle)
+        width = window_rect[2] - window_rect[0]
+        height = window_rect[3] - window_rect[1]
+        element.pos = (width / 2, height / 2)
+        self.add_widget(element)
+        self.icons.append(element)
 
 
 class OpticsScreen(Screen):
