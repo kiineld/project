@@ -12,7 +12,7 @@ from config import host, port, user, passkey, database
 from kivy.config import Config
 import re
 import pymysql.cursors
-import win32gui
+# import win32gui
 
 Builder.load_file('registration.kv')
 Builder.load_file('login.kv')
@@ -21,10 +21,12 @@ Builder.load_file('mainField.kv')
 Builder.load_file('set_selection_electricity.kv')
 Builder.load_file('set_selection_mechanics.kv')
 Builder.load_file('set_selection_optics.kv')
+Builder.load_file('account.kv')
 Config.set('input', 'mouse', 'mouse, multitouch_on_demand')
 
 title = None
 
+# /usr/local/mysql/bin/mysql -u root -p
 connection = pymysql.connect(
     host=host,
     port=port,
@@ -36,6 +38,7 @@ connection = pymysql.connect(
 
 Window.maximize()
 icons = []
+graph = []
 
 
 class RegistrationScreen(Screen):
@@ -48,17 +51,33 @@ class RegistrationScreen(Screen):
         # проверка вводимой информации
         if len(username.split()) != 2:
             print("Имя пользователя должно состоять из 2-ух слов: фамилии и имени")
+            popup = Popup(title='Ошибка', content=Label(text='Имя пользователя должно состоять из 2-ух слов: фамилии и имени!'), size_hint=(0.4, 0.16))
+            popup.overlay_color = Color(1, 1, 1, 0).rgba
+            popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
+            popup.open()
             return
         if not username.split()[0].isalpha() or not username.split()[1].isalpha():
             print("Имя пользователя не может включать символы помимо букв")
+            popup = Popup(title='Ошибка', content=Label(text='Имя пользователя не может включать символы помимо букв!'), size_hint=(0.4, 0.16))
+            popup.overlay_color = Color(1, 1, 1, 0).rgba
+            popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
+            popup.open()
             return
 
         if len(password) < 6:
             print("Пароль должен содержать не менее 6 символов")
+            popup = Popup(title='Ошибка', content=Label(text='Пароль должен содержать не менее 6 символов!'), size_hint=(0.3, 0.16))
+            popup.overlay_color = Color(1, 1, 1, 0).rgba
+            popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
+            popup.open()
             return
 
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             print("Неправильный формат адреса электронной почты")
+            popup = Popup(title='Ошибка', content=Label(text='Неправильный формат адреса электронной почты!'), size_hint=(0.3, 0.16))
+            popup.overlay_color = Color(1, 1, 1, 0).rgba
+            popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
+            popup.open()
             return
 
         print(f"Зарегистрирован {username} с паролем: {password} и почтой: {email}")
@@ -69,7 +88,7 @@ class RegistrationScreen(Screen):
             cursor.execute(check_query)
             rows = cursor.fetchall()
             for row in rows:
-                if username == row['name'] or password == row['password'] or email == row['email']:
+                if username == row['name'] or email == row['email']:
                     print("user in database")
                     in_data_base = True
                     break
@@ -79,6 +98,11 @@ class RegistrationScreen(Screen):
             if not in_data_base:
                 insert_query = f"INSERT INTO users (name, password, email) VALUES ('{username}','{password}','{email}')"
                 cursor.execute(insert_query)
+            else:
+                popup = Popup(title='Ошибка', content=Label(text='Пользователь уже есть в базе!'), size_hint=(0.2, 0.16))
+                popup.overlay_color = Color(1, 1, 1, 0).rgba
+                popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
+                popup.open()
             connection.commit()
 
         # переключение на следующий экран
@@ -87,28 +111,37 @@ class RegistrationScreen(Screen):
             app.root.current = "section_selection"
             app.root.transition.direction = "left"
         else:
-            app.root.current = "login"
-            app.root.transition.direction = "left"
+            self.ids.username_input.text = ''
+            self.ids.password_input.text = ''
+            self.ids.email_input.text = ''
 
 
 class LoginScreen(Screen):
     def do_login(self, instance):
+        found = False
         app = MDApp.get_running_app()
         # получение введенного имени и пароля
         username = self.ids.username_input.text
         password = self.ids.password_input.text
         # проверка вводимых данных
         with (connection.cursor() as cursor):
-            check_query = """SELECT * FROM user_data"""
+            check_query = """SELECT * FROM users"""
             cursor.execute(check_query)
             rows = cursor.fetchall()
             for row in rows:
                 if username == row['name']:
                     if password == row['password']:
+                        found = True
                         print(f"success, пользователь {username} с паролем: {password}")
-                        app.root.current = "section_selection"
-                        app.root.transition.direction = "left"
                         break
+            if not found:
+                popup = Popup(title='Ошибка', content=Label(text='Неправильные данные!'), size_hint=(0.2, 0.16))
+                popup.overlay_color = Color(1, 1, 1, 0).rgba
+                popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
+                popup.open()
+            else:
+                app.root.current = "section_selection"
+                app.root.transition.direction = "left"
 
 
 class ScreenSelection(Screen):
@@ -196,6 +229,7 @@ class MechanicsScreen(Screen):
 
 class ElectricityScreen(Screen):
     global icons
+    global graph
 
     def __init__(self, **kwargs):
         global title
@@ -253,22 +287,28 @@ class ElectricityScreen(Screen):
 
     def open_account(self):
         print("account")
+        app = MDApp.get_running_app()
+        app.root.transition.direction = "left"
+        app.root.current = "account_screen"
 
     def change(self, number):
         self.ids.top_bar.title = str(number)
 
     def check_scheme(self):
-        popup = Popup(title='Ошибка', content=Label(text='Неправильная схема!'), size_hint=(None, None), size=(200, 100))
+
+        popup = Popup(title='Ошибка', content=Label(text='Неправильная схема!'), size_hint=(0.16, 0.16))
         popup.overlay_color = Color(1, 1, 1, 0).rgba
         popup.separator_color = Color(168/255, 228/255, 160/255, 1).rgba
         popup.open()
 
     def make_element(self, element_path):
         element = DraggableElement(source=element_path)
-        window_handle = win32gui.FindWindow(None, "Physics")
-        window_rect = win32gui.GetWindowRect(window_handle)
-        width = window_rect[2] - window_rect[0]
-        height = window_rect[3] - window_rect[1]
+        # window_handle = win32gui.FindWindow(None, "Physics")
+        # window_rect = win32gui.GetWindowRect(window_handle)
+        # width = window_rect[2] - window_rect[0]
+        # height = window_rect[3] - window_rect[1]
+        width = 2560
+        height = 1600
         element.pos = [width / 2, height / 2]
         self.add_widget(element)
         for icon in icons:
@@ -291,6 +331,10 @@ class SetScreenMechanics(Screen):
 
 
 class SetScreenOptics(Screen):
+    pass
+
+
+class AccountScreen(Screen):
     pass
 
 
@@ -324,6 +368,9 @@ class PhysicsApp(MDApp):
 
         set_selection_optics = SetScreenOptics(name="set_selection_optics")
         screen_manager.add_widget(set_selection_optics)
+
+        account_screen = AccountScreen(name='account_screen')
+        screen_manager.add_widget(account_screen)
 
         return screen_manager
 

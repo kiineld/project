@@ -1,0 +1,27 @@
+<AccountScreen>:
+    BoxLayout:
+        orientation: "vertical"
+
+        Label:
+            text: "Личный кабинет"
+            color: 0, 0, 0, 1
+            font_size: 60
+            size_hint: 1, 0.2
+
+        Label:
+            text: "Ваше имя: гость"
+            color: 0, 0, 0, 1
+            font_size: 30
+            size_hint: 1, 0.1
+
+        Image:
+            source: "images/sigmacat.png"
+
+        RoundedButton:
+            text: "Закрыть настройки"
+            font_size: 20
+            size_hint: 0.3, 0.1
+            pos_hint: {"center_x": 0.5}
+            on_press:
+                app.root.current = "electricity"
+                app.root.transition.direction = "right"

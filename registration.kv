@@ -57,9 +57,10 @@
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
         TextInput:
-            hint_text: "Введите почту"
+            hint_text: "Введите имя пользователя"
+            helper_text: "Имя должно содержать два слова"
             helper_text_mode: "persistent"
-            id: email_input
+            id: username_input
             font_size: 32
             multiline: False
             size_hint: 0.7, 0.2
@@ -76,10 +77,9 @@
                     points: (self.x, self.y + self.height / 3, self.x + self.width, self.y + self.height / 3)
 
         TextInput:
-            hint_text: "Введите имя пользователя"
-            helper_text: "Имя должно содержать два слова"
+            hint_text: "Введите почту"
             helper_text_mode: "persistent"
-            id: username_input
+            id: email_input
             font_size: 32
             multiline: False
             size_hint: 0.7, 0.2
