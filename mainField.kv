@@ -38,6 +38,12 @@
                         size_hint: 0.05, 0.05
                         pos_hint: {"center_x": 0.5, "center_y": 0.04}
                         on_press: root.check_scheme()
+                    RoundedButton:
+                        text: "Очистить"
+                        font_size: 20
+                        size_hint: 0.05, 0.05
+                        pos_hint: {"center_x": 0.1, "center_y": 0.04}
+                        on_press: root.clear_scheme()
 
             MDNavigationDrawer:
                 id: nav_drawer

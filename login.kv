@@ -89,7 +89,9 @@
             font_size: 30
             size_hint: 0.7, 0.21
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            on_press: root.do_login(self)
+            on_press:
+                root.do_login(self)
+                app.root.transition.direction = "left"
 
         Button:
             text: "Нет аккаунта? Создать"
@@ -106,7 +108,9 @@
                 Line:
                     rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
                     width: 2
-            on_press: app.root.current = "registration"
+            on_press:
+                app.root.current = "registration"
+                app.root.transition.direction = "left"
 
         Button:
             background_color: (1,0,1,0)
@@ -116,4 +120,7 @@
             color: rgba(68, 78, 132, 255)
             size_hint: 0.5, 0.2
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            on_press: app.root.current = "section_selection"
+            on_press:
+                app.root.current = "section_selection"
+                app.root.transition.direction = "left"
+

@@ -1,3 +1,4 @@
+# import pygame
 from kivy.animation import Animation
 from kivy.core.window import Window
 from kivy.graphics import Color, Line
@@ -12,6 +13,10 @@ from config import host, port, user, passkey, database
 from kivy.config import Config
 import re
 import pymysql.cursors
+import pyautogui
+import tkinter
+# from ctypes import windll, wintypes, byref
+# import win32api
 # import win32gui
 
 Builder.load_file('registration.kv')
@@ -39,6 +44,8 @@ connection = pymysql.connect(
 Window.maximize()
 icons = []
 graph = []
+previous = ""
+variant = 0
 
 
 class RegistrationScreen(Screen):
@@ -145,7 +152,19 @@ class LoginScreen(Screen):
 
 
 class ScreenSelection(Screen):
-    pass
+    def go_back(self):
+        print("logout")
+        app = MDApp.get_running_app()
+        app.root.transition.direction = "right"
+        app.root.current = "login"
+
+    def open_account(self):
+        print("account")
+        global previous
+        previous = "section_selection"
+        app = MDApp.get_running_app()
+        app.root.transition.direction = "left"
+        app.root.current = "account_screen"
 
 
 class DraggableElement(Image):
@@ -156,6 +175,7 @@ class DraggableElement(Image):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.double_tapped = False
         self.size_hint = (None, None)
         self.size = (50, 50)  # размер элемента
         self.dragging = False  # флаг перетаскивания
@@ -173,8 +193,11 @@ class DraggableElement(Image):
         if self.collide_point(*touch.pos):
             if touch.is_double_tap:
                 self.dragging = False
-                self.angle += 90
-                self.angle = (self.angle % 360)
+                print("SOSISKA", end=' ')
+                self.double_tapped = True
+
+            else:
+                self.double_tapped = False
 
             if touch.button == 'right':
                 # print("KRASNYA POINT")
@@ -201,6 +224,12 @@ class DraggableElement(Image):
                 print(icon.pos, end=' ')
             print()
             self.pos = (touch.pos[0] + self.touch_offset[0], touch.pos[1] + self.touch_offset[1])
+
+        if self.double_tapped:
+            element = DraggableElement(source='images/horizontal_wire.png')
+            element.pos = [touch.pos[0], touch.pos[1]]
+            self.add_widget(element)
+            icons.append(element)
 
     def on_touch_up(self, touch):
         # обработка отпускания
@@ -232,13 +261,12 @@ class ElectricityScreen(Screen):
     global graph
 
     def __init__(self, **kwargs):
-        global title
+        global variant
         super().__init__(**kwargs)
         self.orientation = "vertical"
-        self.title = self.ids.top_bar.title
+        self.ids.top_bar.title = "Электричество, комплект " + str(variant)
         self.canvas.before.add(Color(0.9, 0.9, 0.9, 1))
         self.canvas.before.add(Line(width=1.5))
-
         cell_size = 50  # размер ячейки сетки
         win_width, win_height = Window.size
 
@@ -286,20 +314,27 @@ class ElectricityScreen(Screen):
         app.root.current = "set_selection_electricity"
 
     def open_account(self):
+        global previous
         print("account")
+        previous = "electricity"
         app = MDApp.get_running_app()
         app.root.transition.direction = "left"
         app.root.current = "account_screen"
 
-    def change(self, number):
-        self.ids.top_bar.title = str(number)
+    def changed(self):
+        global variant
+        self.ids.top_bar.title = "Электричество, комплект" + str(variant)
 
     def check_scheme(self):
-
         popup = Popup(title='Ошибка', content=Label(text='Неправильная схема!'), size_hint=(0.16, 0.16))
         popup.overlay_color = Color(1, 1, 1, 0).rgba
         popup.separator_color = Color(168/255, 228/255, 160/255, 1).rgba
         popup.open()
+
+    def clear_scheme(self):
+        for icon in icons:
+            self.remove_widget(icon)
+        icons.clear()
 
     def make_element(self, element_path):
         element = DraggableElement(source=element_path)
@@ -322,8 +357,25 @@ class OpticsScreen(Screen):
 
 
 class SetScreenElectricity(Screen):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def go_back(self):
+        print("logout")
+        app = MDApp.get_running_app()
+        app.root.transition.direction = "right"
+        app.root.current = "section_selection"
+
+    def open_account(self):
+        print("account")
+        global previous
+        previous = "set_selection_electricity"
+        app = MDApp.get_running_app()
+        app.root.transition.direction = "left"
+        app.root.current = "account_screen"
+
+    def change(self, number):
+        app = MDApp.get_running_app()
+        global variant
+        variant = number
+        print()
 
 
 class SetScreenMechanics(Screen):
@@ -335,7 +387,12 @@ class SetScreenOptics(Screen):
 
 
 class AccountScreen(Screen):
-    pass
+    def go_back(self):
+        global previous
+        print(previous)
+        app = MDApp.get_running_app()
+        app.root.current = previous
+        app.root.transition.direction = "right"
 
 
 class PhysicsApp(MDApp):
