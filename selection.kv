@@ -1,10 +1,16 @@
 <ScreenSelection>:
-    Label:
-        text: "Выберете раздел"
-        color: 0, 0, 0
-        font_size: 60
-        size_hint: 1, 0.4
-        pos_hint: {"center_x": 0.5, "center_y": 0.92}
+    MDScreen:
+        MDNavigationLayout:
+            MDScreenManager:
+                MDScreen:
+                    MDTopAppBar:
+                        title: "Выберите раздел"
+                        orientation: "vertical"
+                        pos_hint: {"center_x": 0.5, "center_y": 0.97}
+                        left_action_items: [["arrow-left-bold-circle-outline", lambda x: root.go_back()]]
+                        right_action_items: [["account", lambda x: root.open_account()]]
+                        elevation: 1
+                        md_bg_color: 168/255, 228/255, 160/255, 1
 
     BoxLayout:
         orientation: "horizontal"
@@ -17,27 +23,33 @@
             font_size: 20
             size_hint: 0.3, 0.9
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
-            on_press: app.root.current = "mechanics"
+            on_press:
+                app.root.current = "set_selection_mechanics"
+                app.root.transition.direction = "left"
+
 
         RoundedButton:
             text: "Электричество"
             font_size: 20
             size_hint: 0.3, 0.9
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
-            on_press: app.root.current = "electricity"
+            on_press:
+                app.root.current = "set_selection_electricity"
+                app.root.transition.direction = "left"
 
         RoundedButton:
             text: "Оптика"
             font_size: 20
             size_hint: 0.3, 0.9
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
-            on_press: app.root.current = "optics"
+            on_press:
+                app.root.current = "set_selection_optics"
+                app.root.transition.direction = "left"
 
 <MechanicsScreen>:
     BoxLayout:
         orientation: "vertical"
         Label:
-            text: "Выберете комплект"
             color: 0, 0, 0
             font_size: 20
 
@@ -52,6 +64,5 @@
     BoxLayout:
         orientation: "vertical"
         Label:
-            text: "Выберете комплект"
             color: 0, 0, 0
             font_size: 20
