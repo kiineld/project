@@ -12,8 +12,8 @@ from kivy.lang import Builder
 from config import host, port, user, passkey, database
 from kivy.config import Config
 import re
-import pymysql.cursors
-import pyautogui
+# import pymysql.cursors
+# import pyautogui
 import tkinter
 # from ctypes import windll, wintypes, byref
 # import win32api
@@ -32,19 +32,20 @@ Config.set('input', 'mouse', 'mouse, multitouch_on_demand')
 title = None
 
 # /usr/local/mysql/bin/mysql -u root -p
-connection = pymysql.connect(
-    host=host,
-    port=port,
-    user=user,
-    password=passkey,
-    database=database,
-    cursorclass=pymysql.cursors.DictCursor
-)
+# connection = pymysql.connect(
+#     host=host,
+#     port=port,
+#     user=user,
+#     password=passkey,
+#     database=database,
+#     cursorclass=pymysql.cursors.DictCursor
+# )
 
 Window.maximize()
 icons = []
 graph = []
 previous = ""
+user = ""
 variant = 0
 
 
@@ -90,27 +91,27 @@ class RegistrationScreen(Screen):
         print(f"Зарегистрирован {username} с паролем: {password} и почтой: {email}")
 
         # поиск совпадений в базе данных
-        with connection.cursor() as cursor:
-            check_query = """SELECT * FROM users"""
-            cursor.execute(check_query)
-            rows = cursor.fetchall()
-            for row in rows:
-                if username == row['name'] or email == row['email']:
-                    print("user in database")
-                    in_data_base = True
-                    break
+        # with connection.cursor() as cursor:
+        #     check_query = """SELECT * FROM users"""
+        #     cursor.execute(check_query)
+        #     rows = cursor.fetchall()
+        #     for row in rows:
+        #         if username == row['name'] or email == row['email']:
+        #             print("user in database")
+        #             in_data_base = True
+        #             break
 
        # запись нового пользователя в базу данных
-        with connection.cursor() as cursor:
-            if not in_data_base:
-                insert_query = f"INSERT INTO users (name, password, email) VALUES ('{username}','{password}','{email}')"
-                cursor.execute(insert_query)
-            else:
-                popup = Popup(title='Ошибка', content=Label(text='Пользователь уже есть в базе!'), size_hint=(0.2, 0.16))
-                popup.overlay_color = Color(1, 1, 1, 0).rgba
-                popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
-                popup.open()
-            connection.commit()
+       #  with connection.cursor() as cursor:
+       #      if not in_data_base:
+       #          insert_query = f"INSERT INTO users (name, password, email) VALUES ('{username}','{password}','{email}')"
+       #          cursor.execute(insert_query)
+       #      else:
+       #          popup = Popup(title='Ошибка', content=Label(text='Пользователь уже есть в базе!'), size_hint=(0.2, 0.16))
+       #          popup.overlay_color = Color(1, 1, 1, 0).rgba
+       #          popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
+       #          popup.open()
+       #      connection.commit()
 
         # переключение на следующий экран
         app = MDApp.get_running_app()
@@ -125,30 +126,32 @@ class RegistrationScreen(Screen):
 
 class LoginScreen(Screen):
     def do_login(self, instance):
+        global user
         found = False
         app = MDApp.get_running_app()
         # получение введенного имени и пароля
         username = self.ids.username_input.text
         password = self.ids.password_input.text
         # проверка вводимых данных
-        with (connection.cursor() as cursor):
-            check_query = """SELECT * FROM users"""
-            cursor.execute(check_query)
-            rows = cursor.fetchall()
-            for row in rows:
-                if username == row['name']:
-                    if password == row['password']:
-                        found = True
-                        print(f"success, пользователь {username} с паролем: {password}")
-                        break
-            if not found:
-                popup = Popup(title='Ошибка', content=Label(text='Неправильные данные!'), size_hint=(0.2, 0.16))
-                popup.overlay_color = Color(1, 1, 1, 0).rgba
-                popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
-                popup.open()
-            else:
-                app.root.current = "section_selection"
-                app.root.transition.direction = "left"
+        # with (connection.cursor() as cursor):
+        #     check_query = """SELECT * FROM users"""
+        #     cursor.execute(check_query)
+        #     rows = cursor.fetchall()
+        #     for row in rows:
+        #         if username == row['name']:
+        #             if password == row['password']:
+        #                 found = True
+        #                 print(f"success, пользователь {username} с паролем: {password}")
+#                         user = username
+        #                 break
+        if not found:
+            popup = Popup(title='Ошибка', content=Label(text='Неправильные данные!'), size_hint=(0.2, 0.16))
+            popup.overlay_color = Color(1, 1, 1, 0).rgba
+            popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
+            popup.open()
+        else:
+            app.root.current = "section_selection"
+            app.root.transition.direction = "left"
 
 
 class ScreenSelection(Screen):
@@ -192,7 +195,6 @@ class DraggableElement(Image):
         # обработка клика на элемент
         if self.collide_point(*touch.pos):
             if touch.is_double_tap:
-                self.dragging = False
                 print("SOSISKA", end=' ')
                 self.double_tapped = True
 
@@ -207,6 +209,8 @@ class DraggableElement(Image):
 
             else:
                 self.dragging = True
+                if self.double_tapped:
+                    self.dragging = False
                 self.touch_offset = (self.pos[0] - touch.pos[0], self.pos[1] - touch.pos[1])
                 if not self.initial_position:
                     self.initial_position = tuple(self.pos)
@@ -228,13 +232,24 @@ class DraggableElement(Image):
         if self.double_tapped:
             element = DraggableElement(source='images/horizontal_wire.png')
             element.pos = [touch.pos[0], touch.pos[1]]
+            cell_size = 50
+            if self.pos[0] % cell_size >= cell_size / 2:
+                new_x = (int(element.pos[0] / cell_size) + 1) * cell_size
+            else:
+                new_x = int(element.pos[0] / cell_size) * cell_size
+            if self.pos[1] % cell_size >= cell_size / 2:
+                new_y = (int(element.pos[1] / cell_size) + 1) * cell_size
+            else:
+                new_y = int(element.pos[1] / cell_size) * cell_size
+            element.pos = (new_x, new_y)
             self.add_widget(element)
             icons.append(element)
 
     def on_touch_up(self, touch):
         # обработка отпускания
+        self.dragging = False
+        self.double_tapped = False
         if self.collide_point(*touch.pos):
-            self.dragging = False
             self.dragged_elements.append(self)
             # округление координат к ближайшим точкам сетки
             cell_size = 50
@@ -247,6 +262,7 @@ class DraggableElement(Image):
             else:
                 new_y = int(self.pos[1] / cell_size) * cell_size
             self.pos = (new_x, new_y) # перемещение элемента в ближайшую точку сетки
+
             # создание дубликата элемента на первоначальном месте
             # duplicate_element = self.create_duplicate()
             # self.parent.add_widget(duplicate_element)
@@ -342,8 +358,8 @@ class ElectricityScreen(Screen):
         # window_rect = win32gui.GetWindowRect(window_handle)
         # width = window_rect[2] - window_rect[0]
         # height = window_rect[3] - window_rect[1]
-        width = 2560
-        height = 1600
+        width = 1920
+        height = 1080
         element.pos = [width / 2, height / 2]
         self.add_widget(element)
         for icon in icons:
@@ -388,11 +404,13 @@ class SetScreenOptics(Screen):
 
 class AccountScreen(Screen):
     def go_back(self):
+        global user
         global previous
         print(previous)
         app = MDApp.get_running_app()
         app.root.current = previous
         app.root.transition.direction = "right"
+        self.ids.sigma.title = f"Ваше имя: {user}"
 
 
 class PhysicsApp(MDApp):
