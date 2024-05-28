@@ -1,8 +1,7 @@
-# import pygame
 import pymysql
 from kivy.animation import Animation
 from kivy.core.window import Window
-from kivy.graphics import Color, Line
+from kivy.graphics import Color, Line, InstructionGroup
 from kivy.properties import NumericProperty
 from kivy.uix.popup import Popup
 from kivymd.app import MDApp
@@ -50,6 +49,8 @@ graph = []
 previous = ""
 user = ""
 variant = 0
+lenses = None
+exists = False
 
 
 class RegistrationScreen(Screen):
@@ -338,33 +339,114 @@ class ElectricityScreen(Screen):
                 element.pos = [icon.pos[0], icon.pos[1] + 50]
         icons.append(element)
 
+
 class OpticsScreen(Screen):
+    global lenses
+
     def __init__(self, **kwargs):
+        self.focus_line_inversed = None
+        self.focus_inversed = None
         global variant
         super().__init__(**kwargs)
+        self.items = []
+        self.focus = Line()
         self.orientation = "vertical"
         self.ids.top_bar.title = "Оптика, комплект " + str(variant)
-        self.canvas.before.add(Color(0.9, 0.9, 0.9, 1))
-        self.canvas.before.add(Line(width=1.5))
         self.focus_distance = None
-        self.focus_line = None
+        self.focus_mark = None
+        self.focus_mark_inversed = None
+        self.focus_line = Line()
         self.center_x = Window.size[0] / 2
         self.center_y = Window.size[1] / 2
-        arrow_size = 20
-
+        self.arrow_size = 20
         self.canvas.before.add(Color(0, 0, 0, 1))
-        self.canvas.before.add(Line(points=[self.center_x - 900, self.center_y, self.center_x + 900, self.center_y], width=5))  # горизонтальная ось
-        self.canvas.before.add(Line(points=[self.center_x, self.center_y - 300, self.center_x, self.center_y + 300], width=5))
-        self.canvas.before.add(Line(points=[self.center_x - arrow_size, self.center_y - 300 + arrow_size, self.center_x, self.center_y - 300, self.center_x + arrow_size, self.center_y - 300 + arrow_size], width=5))
-        self.canvas.before.add(Line(points=[self.center_x - arrow_size, self.center_y + 300 - arrow_size, self.center_x, self.center_y + 300, self.center_x + arrow_size, self.center_y + 300 - arrow_size], width=5))
+        self.canvas.before.add(Line(points=[self.center_x - 900, self.center_y, self.center_x + 900, self.center_y], width=5))
+
+    def clear_scheme(self, type):
+        for item in self.items:
+            self.canvas.before.remove(item)
+        self.items.clear()
+
+        if type == "conv":
+            self.items.append(Line(points=[self.center_x, self.center_y - 300, self.center_x, self.center_y + 300], width=5))
+            self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y - 300 + self.arrow_size, self.center_x,
+                                  self.center_y - 300, self.center_x + self.arrow_size,
+                                  self.center_y - 300 + self.arrow_size], width=5))
+            self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y + 300 - self.arrow_size, self.center_x,
+                                  self.center_y + 300, self.center_x + self.arrow_size,
+                                  self.center_y + 300 - self.arrow_size], width=5))
+
+        elif type == "div":
+            self.items.append(Line(points=[self.center_x, self.center_y - 300, self.center_x, self.center_y + 300], width=5))
+            self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y - 300 - self.arrow_size, self.center_x,
+                                  self.center_y - 300, self.center_x + self.arrow_size,
+                                  self.center_y - 300 - self.arrow_size], width=5))
+            self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y + 300 + self.arrow_size, self.center_x,
+                                  self.center_y + 300, self.center_x + self.arrow_size,
+                                  self.center_y + 300 + self.arrow_size], width=5))
+
+    def make_lens(self, type):
+        self.clear_scheme(type)
+        print("CLEARED")
+        for item in self.items:
+            self.canvas.before.add(item)
+            print(item)
+        print("ADDED")
+        print()
+
     def update_focus_distance(self):
-        if self.focus_distance is not None and self.focus_line is not None:
+        global exists
+        if exists:
+            self.canvas.before.remove(self.focus_line)
+            self.canvas.before.remove(self.focus)
+            self.canvas.before.remove(self.focus_line_inversed)
+            self.canvas.before.remove(self.focus_inversed)
+            self.remove_widget(self.focus_mark)
+            self.remove_widget(self.focus_mark_inversed)
+
+        self.focus_distance = int(self.ids.focus_distance.text)
+
+        if self.focus_distance <= 0:
+            popup = Popup(title='Ошибка', content=Label(text='Фокусное расстояние не может быть меньше 0!'),
+                          size_hint=(0.3, 0.16))
+            popup.overlay_color = Color(1, 1, 1, 0).rgba
+            popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
+            popup.open()
+            exists = False
+        else:
+            self.focus_distance = int(self.ids.focus_distance.text)
+            print(self.focus_distance)
             focus_x = self.center_x + self.focus_distance
             focus_y = self.center_y
-            self.focus_line = Line(points=[self.center_x, self.center_y, focus_x, focus_y], width=5 )
-            self.canvas.before.add(self.focus_line)
-            self.canvas.before.add(Line(points=[focus_x - 20, focus_y - 20, focus_x, focus_y, focus_x + 20, focus_y - 20], width=10))
 
+            self.focus_line = Line(points=[self.center_x, self.center_y, focus_x, focus_y], width=7)
+            self.canvas.before.add(self.focus_line)
+            self.focus = Line(points=[focus_x, focus_y - 20, focus_x, focus_y, focus_x, focus_y + 20], width=7)
+
+            self.focus_mark = Label()
+            self.focus_mark_inversed = Label()
+            self.focus_mark.text = "F"
+            self.focus_mark_inversed.text = "F"
+            self.focus_mark.pos = [self.pos[0] + self.focus_distance, self.pos[1] - 45]
+            self.focus_mark_inversed.pos = [self.pos[0] - self.focus_distance, self.pos[1] - 45]
+            self.focus_mark_inversed.font_size = 40
+            self.focus_mark_inversed.color = [0, 0, 0, 1]
+            self.focus_mark.font_size = 40
+            self.focus_mark.color = [0, 0, 0, 1]
+
+            self.canvas.before.add(self.focus)
+
+            focus_x = self.center_x - self.focus_distance
+
+            self.focus_line_inversed = Line(points=[self.center_x, self.center_y, focus_x, focus_y], width=7)
+            self.canvas.before.add(self.focus_line_inversed)
+            self.focus_inversed = Line(points=[focus_x, focus_y - 20, focus_x, focus_y, focus_x, focus_y + 20], width=7)
+            self.canvas.before.add(self.focus_inversed)
+
+            self.add_widget(self.focus_mark)
+            self.add_widget(self.focus_mark_inversed)
+
+            exists = True
 
     def go_back(self):
         print("logout")

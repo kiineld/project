@@ -37,17 +37,32 @@
                 anchor: "right"
                 MDNavigationDrawerMenu:
                     MDNavigationDrawerHeader:
-                        title: "Ввод данных"
+                        title: "Введите данные"
                         title_color: "#4a4939"
                         spacing: "4dp"
                         padding: "12dp", 0, 0, "56dp"
+
+                    DrawerClickableItem:
+                        icon: "optics_images/converging_lens.png"
+                        text: "Собирающая линза"
+                        on_press: root.make_lens("conv")
+                    MDNavigationDrawerDivider:
+                    DrawerClickableItem:
+                        icon: "optics_images/diverging_lens.png"
+                        text: "Рассеивающая линза"
+                        on_press: root.make_lens("div")
+                    MDNavigationDrawerDivider:
+
                     MDTextField:
                         id: focus_distance
                         hint_text: "Фокусное расстояние"
-                        pos_hint: {"center_x": 0.5, "center_y": 0.5}
-                    Button:
+                        #pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                        #size_hint: 0.7, 0.2
+
+                    DrawerClickableItem:
                         id: update_focus_button
+                        icon: "optics_images/approve.png"
                         text: "Применить"
-                        size_hint: (0.2, 0.1)
-                        pos_hint: {"center_x": 0.5, "center_y": 0.1}
-                        on_release: root.update_focus_distance()
+                        #size_hint: (0.2, 0.1)
+                        #pos_hint: {"center_x": 0.5, "center_y": 0.1}
+                        on_press: root.update_focus_distance()
