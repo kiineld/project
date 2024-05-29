@@ -1,7 +1,7 @@
 import pymysql
 from kivy.animation import Animation
 from kivy.core.window import Window
-from kivy.graphics import Color, Line, InstructionGroup
+from kivy.graphics import Color, Line
 from kivy.properties import NumericProperty
 from kivy.uix.popup import Popup
 from kivymd.app import MDApp
@@ -344,8 +344,6 @@ class OpticsScreen(Screen):
     global lenses
 
     def __init__(self, **kwargs):
-        self.focus_line_inversed = None
-        self.focus_inversed = None
         global variant
         super().__init__(**kwargs)
         self.items = []
@@ -353,6 +351,8 @@ class OpticsScreen(Screen):
         self.orientation = "vertical"
         self.ids.top_bar.title = "Оптика, комплект " + str(variant)
         self.focus_distance = None
+        self.focus_line_inversed = None
+        self.focus_inversed = None
         self.focus_mark = None
         self.focus_mark_inversed = None
         self.focus_line = Line()
@@ -362,12 +362,12 @@ class OpticsScreen(Screen):
         self.canvas.before.add(Color(0, 0, 0, 1))
         self.canvas.before.add(Line(points=[self.center_x - 900, self.center_y, self.center_x + 900, self.center_y], width=5))
 
-    def clear_scheme(self, type):
+    def change_lens(self, lens_type):
         for item in self.items:
             self.canvas.before.remove(item)
         self.items.clear()
 
-        if type == "conv":
+        if lens_type == "conv":
             self.items.append(Line(points=[self.center_x, self.center_y - 300, self.center_x, self.center_y + 300], width=5))
             self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y - 300 + self.arrow_size, self.center_x,
                                   self.center_y - 300, self.center_x + self.arrow_size,
@@ -376,7 +376,7 @@ class OpticsScreen(Screen):
                                   self.center_y + 300, self.center_x + self.arrow_size,
                                   self.center_y + 300 - self.arrow_size], width=5))
 
-        elif type == "div":
+        elif lens_type == "div":
             self.items.append(Line(points=[self.center_x, self.center_y - 300, self.center_x, self.center_y + 300], width=5))
             self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y - 300 - self.arrow_size, self.center_x,
                                   self.center_y - 300, self.center_x + self.arrow_size,
@@ -385,14 +385,10 @@ class OpticsScreen(Screen):
                                   self.center_y + 300, self.center_x + self.arrow_size,
                                   self.center_y + 300 + self.arrow_size], width=5))
 
-    def make_lens(self, type):
-        self.clear_scheme(type)
-        print("CLEARED")
+    def make_lens(self, lens_type):
+        self.change_lens(lens_type)
         for item in self.items:
             self.canvas.before.add(item)
-            print(item)
-        print("ADDED")
-        print()
 
     def update_focus_distance(self):
         global exists
@@ -407,8 +403,7 @@ class OpticsScreen(Screen):
         self.focus_distance = int(self.ids.focus_distance.text)
 
         if self.focus_distance <= 0:
-            popup = Popup(title='Ошибка', content=Label(text='Фокусное расстояние не может быть меньше 0!'),
-                          size_hint=(0.3, 0.16))
+            popup = Popup(title='Ошибка', content=Label(text='Фокусное расстояние не может быть меньше 0!'), size_hint=(0.3, 0.16))
             popup.overlay_color = Color(1, 1, 1, 0).rgba
             popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
             popup.open()
@@ -447,6 +442,35 @@ class OpticsScreen(Screen):
             self.add_widget(self.focus_mark_inversed)
 
             exists = True
+
+    def change_rays(self, rays_type):
+        for item in self.items:
+            self.canvas.before.remove(item)
+        self.items.clear()
+
+        if rays_type == "parallel":
+            self.items.append(Line(points=[self.center_x, self.center_y - 300, self.center_x, self.center_y + 300], width=5))
+            self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y - 300 + self.arrow_size, self.center_x,
+                                  self.center_y - 300, self.center_x + self.arrow_size,
+                                  self.center_y - 300 + self.arrow_size], width=5))
+            self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y + 300 - self.arrow_size, self.center_x,
+                                  self.center_y + 300, self.center_x + self.arrow_size,
+                                  self.center_y + 300 - self.arrow_size], width=5))
+
+        elif rays_type == "inclined":
+            self.items.append(Line(points=[self.center_x, self.center_y - 300, self.center_x, self.center_y + 300], width=5))
+            self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y - 300 - self.arrow_size, self.center_x,
+                                  self.center_y - 300, self.center_x + self.arrow_size,
+                                  self.center_y - 300 - self.arrow_size], width=5))
+            self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y + 300 + self.arrow_size, self.center_x,
+                                  self.center_y + 300, self.center_x + self.arrow_size,
+                                  self.center_y + 300 + self.arrow_size], width=5))
+
+    def make_rays(self, rays_type):
+        self.change_rays(rays_type)
+        for item in self.items:
+            self.canvas.before.add(item)
+
 
     def go_back(self):
         print("logout")
@@ -553,7 +577,7 @@ class PhysicsApp(MDApp):
         set_selection_optics = SetScreenOptics(name="set_selection_optics")
         screen_manager.add_widget(set_selection_optics)
 
-        account_screen = AccountScreen(name='account_screen')
+        account_screen = AccountScreen(name="account_screen")
         screen_manager.add_widget(account_screen)
 
         return screen_manager

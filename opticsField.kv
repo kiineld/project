@@ -53,16 +53,19 @@
                         on_press: root.make_lens("div")
                     MDNavigationDrawerDivider:
 
+                    DrawerClickableItem:
+                        text: "Параллельный пучок"
+                        on_press: root.make_rays("parallel")
+                    MDNavigationDrawerDivider:
+                    DrawerClickableItem:
+                        text: "Преломленный пучок"
+                        on_press: root.make_rays("inclined")
+
                     MDTextField:
                         id: focus_distance
                         hint_text: "Фокусное расстояние"
-                        #pos_hint: {"center_x": 0.5, "center_y": 0.5}
-                        #size_hint: 0.7, 0.2
-
                     DrawerClickableItem:
                         id: update_focus_button
                         icon: "optics_images/approve.png"
                         text: "Применить"
-                        #size_hint: (0.2, 0.1)
-                        #pos_hint: {"center_x": 0.5, "center_y": 0.1}
                         on_press: root.update_focus_distance()
