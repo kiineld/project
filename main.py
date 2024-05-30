@@ -27,12 +27,12 @@ Builder.load_file('mainField.kv')
 Builder.load_file('opticsField.kv')
 Builder.load_file('set_selection_electricity.kv')
 Builder.load_file('set_selection_mechanics.kv')
-Builder.load_file('set_selection_optics.kv')
 Builder.load_file('account.kv')
 Config.set('input', 'mouse', 'mouse, multitouch_on_demand')
 
 title = None
 
+# sudo /usr/local/mysql/support-files/mysql.server start
 # /usr/local/mysql/bin/mysql -u root -p
 connection = pymysql.connect(
     host=host,
@@ -47,14 +47,16 @@ Window.maximize()
 icons = []
 graph = []
 previous = ""
-user = ""
+userr = ""
 variant = 0
 lenses = None
 exists = False
+account = None
 
 
 class RegistrationScreen(Screen):
     def do_registration(self, instance):
+        global userr
         in_data_base = False
         username = self.ids.username_input.text
         password = self.ids.password_input.text
@@ -127,10 +129,19 @@ class RegistrationScreen(Screen):
             self.ids.password_input.text = ''
             self.ids.email_input.text = ''
 
+        userr = username
+
 
 class LoginScreen(Screen):
+    def guest(self):
+        global userr
+        app = MDApp.get_running_app()
+        userr = "гость"
+        app.root.current = "section_selection"
+        app.root.transition.direction = "left"
+
     def do_login(self, instance):
-        global user
+        global userr
         found = False
         app = MDApp.get_running_app()
         # получение введенного имени и пароля
@@ -146,7 +157,7 @@ class LoginScreen(Screen):
                     if password == row['password']:
                         found = True
                         print(f"success, пользователь {username} с паролем: {password}")
-                        user = username
+                        userr = username
                         break
         if not found:
             popup = Popup(title='Ошибка', content=Label(text='Неправильные данные!'), size_hint=(0.2, 0.16))
@@ -166,12 +177,16 @@ class ScreenSelection(Screen):
         app.root.current = "login"
 
     def open_account(self):
+        global userr
+        global account
         print("account")
         global previous
         previous = "section_selection"
         app = MDApp.get_running_app()
         app.root.transition.direction = "left"
         app.root.current = "account_screen"
+        account.update(userr)
+        print(userr)
 
 
 class DraggableElement(Image):
@@ -346,11 +361,15 @@ class OpticsScreen(Screen):
     def __init__(self, **kwargs):
         global variant
         super().__init__(**kwargs)
+        self.lens_type = None
+        self.rays_type = None
         self.items = []
+        self.items_path = []
+        self.items_rays = []
         self.focus = Line()
         self.orientation = "vertical"
         self.ids.top_bar.title = "Оптика, комплект " + str(variant)
-        self.focus_distance = None
+        self.focus_distance = 0
         self.focus_line_inversed = None
         self.focus_inversed = None
         self.focus_mark = None
@@ -386,6 +405,7 @@ class OpticsScreen(Screen):
                                   self.center_y + 300 + self.arrow_size], width=5))
 
     def make_lens(self, lens_type):
+        self.lens_type = lens_type
         self.change_lens(lens_type)
         for item in self.items:
             self.canvas.before.add(item)
@@ -400,7 +420,10 @@ class OpticsScreen(Screen):
             self.remove_widget(self.focus_mark)
             self.remove_widget(self.focus_mark_inversed)
 
-        self.focus_distance = int(self.ids.focus_distance.text)
+        if self.ids.focus_distance.text == "":
+            self.focus_distance = 0
+        else:
+            self.focus_distance = int(self.ids.focus_distance.text)
 
         if self.focus_distance <= 0:
             popup = Popup(title='Ошибка', content=Label(text='Фокусное расстояние не может быть меньше 0!'), size_hint=(0.3, 0.16))
@@ -440,43 +463,119 @@ class OpticsScreen(Screen):
 
             self.add_widget(self.focus_mark)
             self.add_widget(self.focus_mark_inversed)
-
             exists = True
 
     def change_rays(self, rays_type):
-        for item in self.items:
+        self.rays_type = rays_type
+        print(self.rays_type, self.lens_type)
+
+        for item in self.items_rays:
             self.canvas.before.remove(item)
-        self.items.clear()
+        self.items_rays.clear()
 
-        if rays_type == "parallel":
-            self.items.append(Line(points=[self.center_x, self.center_y - 300, self.center_x, self.center_y + 300], width=5))
-            self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y - 300 + self.arrow_size, self.center_x,
-                                  self.center_y - 300, self.center_x + self.arrow_size,
-                                  self.center_y - 300 + self.arrow_size], width=5))
-            self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y + 300 - self.arrow_size, self.center_x,
-                                  self.center_y + 300, self.center_x + self.arrow_size,
-                                  self.center_y + 300 - self.arrow_size], width=5))
-
-        elif rays_type == "inclined":
-            self.items.append(Line(points=[self.center_x, self.center_y - 300, self.center_x, self.center_y + 300], width=5))
-            self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y - 300 - self.arrow_size, self.center_x,
-                                  self.center_y - 300, self.center_x + self.arrow_size,
-                                  self.center_y - 300 - self.arrow_size], width=5))
-            self.items.append(Line(points=[self.center_x - self.arrow_size, self.center_y + 300 + self.arrow_size, self.center_x,
-                                  self.center_y + 300, self.center_x + self.arrow_size,
-                                  self.center_y + 300 + self.arrow_size], width=5))
+        if self.lens_type == "conv":
+            if rays_type == "parallel":
+                print("parallel")
+                self.items_rays.append(
+                    Line(points=[self.center_x - 900, self.center_y + 250, self.center_x, self.center_y + 250], width=5))
+                self.items_rays.append(
+                    Line(points=[self.center_x - 900, self.center_y + 125, self.center_x, self.center_y + 125], width=5))
+                self.items_rays.append(
+                    Line(points=[self.center_x - 900, self.center_y - 125, self.center_x, self.center_y - 125], width=5))
+                self.items_rays.append(
+                    Line(points=[self.center_x - 900, self.center_y - 250, self.center_x, self.center_y - 250], width=5))
+            else:
+                if self.focus_distance == 0:
+                    popup = Popup(title='Ошибка', content=Label(text=f'Введите фокусное расстояние!'),
+                                  size_hint=(0.3, 0.16))
+                    popup.overlay_color = Color(1, 1, 1, 0).rgba
+                    popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
+                    popup.open()
+                else:
+                    print("inclined")
+                    self.items_rays.append(
+                        Line(points=[self.center_x - self.focus_distance, self.center_y, self.center_x, self.center_y + 250], width=5))
+                    self.items_rays.append(
+                        Line(points=[self.center_x - self.focus_distance, self.center_y, self.center_x, self.center_y + 125], width=5))
+                    self.items_rays.append(
+                        Line(points=[self.center_x - self.focus_distance, self.center_y, self.center_x, self.center_y - 125], width=5))
+                    self.items_rays.append(
+                        Line(points=[self.center_x - self.focus_distance, self.center_y, self.center_x, self.center_y - 250], width=5))
+        else:
+            if rays_type == "parallel":
+                self.items_rays.append(
+                    Line(points=[self.center_x - 900, self.center_y + 250, self.center_x, self.center_y + 250], width=5))
+                self.items_rays.append(
+                    Line(points=[self.center_x - 900, self.center_y + 125, self.center_x, self.center_y + 125], width=5))
+                self.items_rays.append(
+                    Line(points=[self.center_x - 900, self.center_y - 125, self.center_x, self.center_y - 125], width=5))
+                self.items_rays.append(
+                    Line(points=[self.center_x - 900, self.center_y - 250, self.center_x, self.center_y - 250], width=5))
 
     def make_rays(self, rays_type):
         self.change_rays(rays_type)
-        for item in self.items:
+        for item in self.items_rays:
             self.canvas.before.add(item)
 
+    def show_path(self):
+        if self.focus_distance == 0:
+            popup = Popup(title='Ошибка', content=Label(text=f'Введите фокусное расстояние!'),
+                          size_hint=(0.3, 0.16))
+            popup.overlay_color = Color(1, 1, 1, 0).rgba
+            popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
+            popup.open()
+
+        for item in self.items_path:
+            self.canvas.before.remove(item)
+        self.items_path.clear()
+
+        if self.lens_type == "conv":
+            if self.rays_type == "parallel":
+                self.items_path.append(
+                    Line(points=[self.center_x, self.center_y + 250, self.center_x + self.focus_distance, self.center_y], width=5))
+                self.items_path.append(
+                    Line(points=[self.center_x, self.center_y + 125, self.center_x + self.focus_distance, self.center_y], width=5))
+                self.items_path.append(
+                    Line(points=[self.center_x, self.center_y - 125, self.center_x + self.focus_distance, self.center_y], width=5))
+                self.items_path.append(
+                    Line(points=[self.center_x, self.center_y - 250, self.center_x + self.focus_distance, self.center_y], width=5))
+            else:
+                self.items_path.append(
+                    Line(points=[self.center_x, self.center_y + 250, self.center_x + 900, self.center_y + 250], width=5))
+                self.items_path.append(
+                    Line(points=[self.center_x, self.center_y + 125, self.center_x + 900, self.center_y + 125], width=5))
+                self.items_path.append(
+                    Line(points=[self.center_x, self.center_y - 125, self.center_x + 900, self.center_y - 125], width=5))
+                self.items_path.append(
+                    Line(points=[self.center_x, self.center_y - 250, self.center_x + 900, self.center_y - 250], width=5))
+        else:
+            if self.rays_type == "parallel":
+                self.items_path.append(
+                    Line(points=[self.center_x - self.focus_distance, self.center_y, self.center_x, self.center_y + 250], width=1))
+                self.items_path.append(
+                    Line(points=[self.center_x - self.focus_distance, self.center_y, self.center_x, self.center_y + 125], width=1))
+                self.items_path.append(
+                    Line(points=[self.center_x - self.focus_distance, self.center_y, self.center_x, self.center_y - 125], width=1))
+                self.items_path.append(
+                    Line(points=[self.center_x - self.focus_distance, self.center_y, self.center_x, self.center_y - 250], width=1))
+
+                self.items_path.append(
+                    Line(points=[self.center_x, self.center_y + 250, self.center_x + self.focus_distance, self.center_y + 500], width=5))
+                self.items_path.append(
+                    Line(points=[self.center_x, self.center_y + 125, self.center_x + self.focus_distance, self.center_y + 250], width=5))
+                self.items_path.append(
+                    Line(points=[self.center_x, self.center_y - 125, self.center_x + self.focus_distance, self.center_y - 250], width=5))
+                self.items_path.append(
+                    Line(points=[self.center_x, self.center_y - 250, self.center_x + self.focus_distance, self.center_y - 500], width=5))
+
+        for item in self.items_path:
+            self.canvas.before.add(item)
 
     def go_back(self):
         print("logout")
         app = MDApp.get_running_app()
         app.root.transition.direction = "right"
-        app.root.current = "set_selection_optics"
+        app.root.current = "section_selection"
 
     def open_account(self):
         global previous
@@ -485,6 +584,14 @@ class OpticsScreen(Screen):
         app = MDApp.get_running_app()
         app.root.transition.direction = "left"
         app.root.current = "account_screen"
+
+    def count_optical_power(self):
+        optical_power = 1 / self.focus_distance
+        popup = Popup(title='Результат', content=Label(text=f'Оптическая сила = {optical_power:.3f}'),
+                      size_hint=(0.3, 0.16))
+        popup.overlay_color = Color(1, 1, 1, 0).rgba
+        popup.separator_color = Color(168 / 255, 228 / 255, 160 / 255, 1).rgba
+        popup.open()
 
 
 class SetScreenElectricity(Screen):
@@ -536,18 +643,20 @@ class SetScreenOptics(Screen):
 
 
 class AccountScreen(Screen):
+    def update(self, user):
+        self.ids.sigma.text = f"Ваше имя: {user}"
+
     def go_back(self):
-        global user
         global previous
         print(previous)
         app = MDApp.get_running_app()
         app.root.current = previous
         app.root.transition.direction = "right"
-        self.ids.sigma.title = f"Ваше имя: {user}"
 
 
 class PhysicsApp(MDApp):
     def build(self):
+        global account
         screen_manager = ScreenManager()
 
         login_screen = LoginScreen(name="login")
@@ -579,7 +688,7 @@ class PhysicsApp(MDApp):
 
         account_screen = AccountScreen(name="account_screen")
         screen_manager.add_widget(account_screen)
-
+        account = account_screen
         return screen_manager
 
 

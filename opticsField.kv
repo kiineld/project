@@ -29,6 +29,19 @@
                         elevation: 1
                         md_bg_color: 168/255, 228/255, 160/255, 1
 
+                    RoundedButton:
+                        text: "Ход лучей"
+                        font_size: 20
+                        size_hint: 0.05, 0.05
+                        pos_hint: {"center_x": 0.5, "center_y": 0.04}
+                        on_press: root.show_path()
+                    RoundedButton:
+                        text: "Посчитать"
+                        font_size: 20
+                        size_hint: 0.05, 0.05
+                        pos_hint: {"center_x": 0.1, "center_y": 0.04}
+                        on_press: root.count_optical_power()
+
 
             MDNavigationDrawer:
                 id: nav_drawer
@@ -60,12 +73,7 @@
                     DrawerClickableItem:
                         text: "Преломленный пучок"
                         on_press: root.make_rays("inclined")
-
                     MDTextField:
                         id: focus_distance
                         hint_text: "Фокусное расстояние"
-                    DrawerClickableItem:
-                        id: update_focus_button
-                        icon: "optics_images/approve.png"
-                        text: "Применить"
-                        on_press: root.update_focus_distance()
+                        on_text: root.update_focus_distance()
