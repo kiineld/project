@@ -20,6 +20,7 @@
 
         RoundedButton:
             text: "Механика"
+            bold: True
             font_size: 20
             size_hint: 0.3, 0.9
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
@@ -27,42 +28,22 @@
                 app.root.current = "set_selection_mechanics"
                 app.root.transition.direction = "left"
 
-
         RoundedButton:
             text: "Электричество"
+            bold: True
             font_size: 20
             size_hint: 0.3, 0.9
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
             on_press:
-                app.root.current = "set_selection_electricity"
+                app.root.current = "electricity"
                 app.root.transition.direction = "left"
 
         RoundedButton:
             text: "Оптика"
+            bold: True
             font_size: 20
             size_hint: 0.3, 0.9
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
             on_press:
                 app.root.current = "optics"
                 app.root.transition.direction = "left"
-
-<MechanicsScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        Label:
-            color: 0, 0, 0
-            font_size: 20
-
-<ElectricityScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        Label:
-            color: 0, 0, 0
-            font_size: 20
-
-<OpticsScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        Label:
-            color: 0, 0, 0
-            font_size: 20

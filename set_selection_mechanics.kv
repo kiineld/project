@@ -1,4 +1,17 @@
 <SetScreenMechanics>:
+    MDScreen:
+        MDNavigationLayout:
+            MDScreenManager:
+                MDScreen:
+                    MDTopAppBar:
+                        title: "Выберите комплект"
+                        orientation: "vertical"
+                        pos_hint: {"center_x": 0.5, "center_y": 0.97}
+                        left_action_items: [["arrow-left-bold-circle-outline", lambda x: root.go_back()]]
+                        right_action_items: [["account", lambda x: root.open_account()]]
+                        elevation: 1
+                        md_bg_color: 168/255, 228/255, 160/255, 1
+
     BoxLayout:
         orientation: "horizontal"
         size_hint: 0.8, 0.8
@@ -6,28 +19,37 @@
         spacing: 115
 
         RoundedButton:
-            text: "Механика"
+            text: "Комплект: Сила трения"
+            bold: True
             font_size: 20
             size_hint: 0.3, 0.9
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
             on_press:
-                app.root.current = "mechanics"
-                app.root.transition.direction = "left"
+                root.change("Сила трения", "mechanics_frictionforce")
 
         RoundedButton:
-            text: "Электричество"
+            text: "Комплект: Колебания"
+            bold: True
             font_size: 20
             size_hint: 0.3, 0.9
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
             on_press:
-                app.root.current = "electricity"
-                app.root.transition.direction = "left"
+                root.change("Колебания", "mechanics_fluctuations")
 
         RoundedButton:
-            text: "Оптика"
+            text: "Комплект: Блоки"
+            bold: True
             font_size: 20
             size_hint: 0.3, 0.9
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
             on_press:
-                app.root.current = "optics"
-                app.root.transition.direction = "left"
+                root.change("Блоки", "mechanics_blocks")
+
+        RoundedButton:
+            text: "Комплект: Сила Архимеда"
+            bold: True
+            font_size: 20
+            size_hint: 0.3, 0.9
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            on_press:
+                root.change("Сила Архимеда", "mechanics_archimedesforce")

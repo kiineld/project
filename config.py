@@ -1,5 +1,5 @@
-host = "localhost"
+host = "sql7.freesqldatabase.com"
 port = 3306
-user = "root"
-passkey = "online123"
-database = "user_data"
+user = "sql7713127"
+passkey = "YDgZgi11Ew"
+database = "sql7713127"

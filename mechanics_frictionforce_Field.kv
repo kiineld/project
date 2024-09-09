@@ -14,14 +14,16 @@
     _no_ripple_effect: True
 
 
-<ElectricityScreen>:
+<MechanicsFrictionForceScreen>:
+    #friction_force_work_visible: False
+    #friction_coefficient_visible: False
     MDScreen:
         MDNavigationLayout:
             MDScreenManager:
                 MDScreen:
                     MDTopAppBar:
                         id: top_bar
-                        title: "Электричество"
+                        title: "Механика"
                         orientation: "vertical"
                         pos_hint: {"center_x": 0.5, "center_y": 0.97}
                         left_action_items: [["arrow-left-bold-circle-outline", lambda x: root.go_back()]]
@@ -29,48 +31,35 @@
                         elevation: 1
                         md_bg_color: 168/255, 228/255, 160/255, 1
                     RoundedButton:
-                        text: "Проверить"
-                        font_size: 18
-                        size_hint: 0.05, 0.05
-                        pos_hint: {"center_x": 0.5, "center_y": 0.04}
-                        on_press: root.check_scheme()
-                    RoundedButton:
-                        text: "Очистить"
-                        font_size: 20
-                        size_hint: 0.05, 0.05
-                        pos_hint: {"center_x": 0.1, "center_y": 0.04}
-                        on_press: root.clear_scheme()
-
-                    RoundedButton:
                         text: "Посчитать 1"
                         font_size: 16
                         size_hint: 0.05, 0.05
-                        pos_hint: {"center_x": 0.4, "center_y": 0.04}
-                        on_press: root.count_power()
+                        pos_hint: {"center_x": 0.45, "center_y": 0.04}
+                        on_press: root.count_friction_force_work()
                     RoundedButton:
                         text: "Посчитать 2"
                         font_size: 16
                         size_hint: 0.05, 0.05
-                        pos_hint: {"center_x": 0.6, "center_y": 0.04}
-                        on_press: root.count_amperage_force_work()
+                        pos_hint: {"center_x": 0.55, "center_y": 0.04}
+                        on_press: root.count_friction_coefficient()
                     RoundedButton:
                         text: "?"
                         font_size: 20
                         size_hint: 0.05, 0.05
                         pos_hint: {"center_x": 0.9, "center_y": 0.04}
-                        on_press: root.electricity_explanation()
+                        on_press: root.friction_force_explanation()
                     RoundedButton:
                         text: "Задача 1"
                         font_size: 20
                         size_hint: 0.05, 0.05
                         pos_hint: {"center_x": 0.1, "center_y": 0.84}
-                        on_press: root.electricity_task1()
+                        on_press: root.friction_force_task1()
                     RoundedButton:
                         text: "Задача 2"
                         font_size: 20
                         size_hint: 0.05, 0.05
                         pos_hint: {"center_x": 0.1, "center_y": 0.74}
-                        on_press: root.electricity_task2()
+                        on_press: root.friction_force_task2()
 
             MDNavigationDrawer:
                 id: nav_drawer
@@ -86,39 +75,37 @@
                         padding: "12dp", 0, 0, "56dp"
 
                     DrawerClickableItem:
-                        icon: "images/ammeter.png"
-                        text: "Амперметр"
-                        on_press: root.make_element("images/ammeter.png")
+                        icon: "mechanics_images/object.png"
+                        text: "Тело"
+                        on_press: root.draw_object()
                     MDNavigationDrawerDivider:
 
                     DrawerClickableItem:
-                        icon: "images/resistor.png"
-                        text: "Резистор"
-                        on_press: root.make_element("images/resistor.png")
+                        icon: "mechanics_images/dynamometer.png"
+                        text: "Динамометр"
+                        on_press: root.draw_dynamometer()
                     MDNavigationDrawerDivider:
 
                     DrawerClickableItem:
-                        icon: "images/source.png"
-                        text: "Источник питания"
-                        on_press: root.make_element("images/source.png")
+                        icon: "mechanics_images/forces.png"
+                        text: "Показать силы"
+                        on_press: root.show_forces()
                     MDNavigationDrawerDivider:
 
-                    DrawerClickableItem:
-                        icon: "images/voltmeter.png"
-                        text: "Вольтметр"
-                        on_press: root.make_element("images/voltmeter.png")
-
                     MDTextField:
-                        id: voltage
-                        hint_text: "Напряжение[В]"
-                        on_text: root.get_voltage()
-
+                        id: friction_force
+                        hint_text: "Сила трения[Н]"
+                        on_text: root.get_friction_force()
                     MDTextField:
-                        id: amperage_force
-                        hint_text: "Сила тока[А]"
-                        on_text: root.get_amperage_force()
-
+                        id: distance
+                        hint_text: "Пройденное расстояние[см]"
+                        on_text: root.get_distance()
+                    MDNavigationDrawerDivider:
                     MDTextField:
-                        id: time
-                        hint_text: "Время[мин]"
-                        on_text: root.get_time()
+                        id: traction_force
+                        hint_text: "Сила тяги[Н]"
+                        on_text: root.get_traction_force()
+                    MDTextField:
+                        id: weight
+                        hint_text: "Масса тела с грузиками[г]"
+                        on_text: root.get_weight()

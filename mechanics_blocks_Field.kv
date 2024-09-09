@@ -14,46 +14,44 @@
     _no_ripple_effect: True
 
 
-<OpticsScreen>:
+<MechanicsBlocksScreen>:
     MDScreen:
         MDNavigationLayout:
             MDScreenManager:
                 MDScreen:
                     MDTopAppBar:
                         id: top_bar
-                        title: "Оптика"
+                        title: "Механика"
                         orientation: "vertical"
                         pos_hint: {"center_x": 0.5, "center_y": 0.97}
                         left_action_items: [["arrow-left-bold-circle-outline", lambda x: root.go_back()]]
                         right_action_items: [["account", lambda x: root.open_account()], ["menu", lambda x: root.ids.nav_drawer.set_state("toggle")]]
                         elevation: 1
                         md_bg_color: 168/255, 228/255, 160/255, 1
-
                     RoundedButton:
-                        text: "Ход лучей"
-                        font_size: 18
+                        text: "Грузы"
+                        font_size: 20
                         size_hint: 0.05, 0.05
-                        pos_hint: {"center_x": 0.5, "center_y": 0.04}
-                        on_press: root.show_path()
+                        pos_hint: {"center_x": 0.1, "center_y": 0.04}
+                        on_press: root.draw_cargo()
                     RoundedButton:
                         text: "Посчитать"
                         font_size: 18
                         size_hint: 0.05, 0.05
-                        pos_hint: {"center_x": 0.1, "center_y": 0.04}
-                        on_press: root.count_optical_power()
+                        pos_hint: {"center_x": 0.5, "center_y": 0.04}
+                        on_press: root.count_elastic_force_work()
                     RoundedButton:
                         text: "?"
                         font_size: 20
                         size_hint: 0.05, 0.05
                         pos_hint: {"center_x": 0.9, "center_y": 0.04}
-                        on_press: root.optics_explanation()
+                        on_press: root.blocks_explanation()
                     RoundedButton:
                         text: "Задача"
                         font_size: 20
                         size_hint: 0.05, 0.05
                         pos_hint: {"center_x": 0.1, "center_y": 0.84}
-                        on_press: root.optics_task()
-
+                        on_press: root.blocks_task()
 
             MDNavigationDrawer:
                 id: nav_drawer
@@ -62,30 +60,32 @@
                 anchor: "right"
                 MDNavigationDrawerMenu:
                     MDNavigationDrawerHeader:
-                        title: "Введите данные"
+                        title: "Элементы комплекта"
                         title_color: "#4a4939"
+                        text: "Выберите элемент комплекта"
                         spacing: "4dp"
                         padding: "12dp", 0, 0, "56dp"
 
                     DrawerClickableItem:
-                        icon: "optics_images/converging_lens.png"
-                        text: "Собирающая линза"
-                        on_press: root.make_lens("conv")
+                        icon: "mechanics_images/forces.png"
+                        text: "Показать силы"
+                        on_press: root.show_force()
                     MDNavigationDrawerDivider:
                     DrawerClickableItem:
-                        icon: "optics_images/diverging_lens.png"
-                        text: "Рассеивающая линза"
-                        on_press: root.make_lens("div")
+                        icon: "mechanics_images/dynamometer2.png"
+                        text: "Динамометр"
+                        on_press: root.draw_dynamometer()
                     MDNavigationDrawerDivider:
 
-                    DrawerClickableItem:
-                        text: "Параллельный пучок"
-                        on_press: root.make_rays("parallel")
-                    MDNavigationDrawerDivider:
-                    DrawerClickableItem:
-                        text: "Преломленный пучок"
-                        on_press: root.make_rays("inclined")
                     MDTextField:
-                        id: focus_distance
-                        hint_text: "Фокусное расстояние[м]"
-                        on_text: root.update_focus_distance()
+                        id: cargo_number
+                        hint_text: "Количество грузов"
+                        on_text: root.get_cargo_number()
+                    MDTextField:
+                        id: cargo_weight
+                        hint_text: "Масса 1 груза[г]"
+                        on_text: root.get_cargo_weight()
+                    MDTextField:
+                        id: reach_height
+                        hint_text: "Высота подъема[см]"
+                        on_text: root.get_reach_height()

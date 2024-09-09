@@ -7,7 +7,7 @@
         RoundedRectangle:
             size: self.size
             pos: self.pos
-            radius: [32]
+            radius: [15]
 
 
 <RegistrationScreen>:
@@ -39,7 +39,7 @@
                 offset: 0, -15
                 blur_radius: 50
                 spread_radius: -30, -30
-                border_radius: 40, 40, 40, 40
+                border_radius: 60, 60, 60, 60
             Color:
                 rgb: 1, 1, 1
             RoundedRectangle:
@@ -52,7 +52,7 @@
             bold: True
             markup: True
             color: 0, 0, 0
-            font_size: 50
+            font_size: 48
             size_hint: 0.5, 0.5
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
@@ -130,7 +130,7 @@
             background_normal: ''
             font_size: 30
             size_hint: 0.7, 0.21
-            border_radius: 32
+            border_radius: 15
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             canvas.before:
                 Color:
